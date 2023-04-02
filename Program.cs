@@ -13,7 +13,7 @@ namespace JSRuntime
         static void Main(string[] args)
         {
             System.Console.OutputEncoding= Encoding.UTF8;
-            JSRuntime.JS.Scope.Evaluate(System.IO.File.ReadAllText("./script/main.js"));
+            JSRuntime.JS.Scope.Evaluate(System.IO.File.ReadAllText("./script/main.js"), args);
         }
     }
 }

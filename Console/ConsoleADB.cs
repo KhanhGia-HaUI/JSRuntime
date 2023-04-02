@@ -101,6 +101,8 @@ namespace JSRuntime.Console
         /// Dừng chương trình đến khi nào ấn một phím bất kì
         /// </summary>
         /// 
+
+
         public static void EndProcess()
         {
             System.Console.ReadKey();

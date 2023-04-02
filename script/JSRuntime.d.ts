@@ -2,7 +2,7 @@
  * @param JSRuntime - Default namespace
  */
 
-export namespace JSRuntime {
+declare namespace JSRuntime {
 
 
     /**
@@ -21,4 +21,13 @@ export namespace JSRuntime {
 
     export const ConsoleVersion: number;
 
+
+    export const args = [];
+
 }
+
+
+
+declare const args: Array<string>;
+
+

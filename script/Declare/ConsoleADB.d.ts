@@ -93,4 +93,9 @@ declare namespace ConsoleADB {
 
 
 
+
+
 }
+
+
+declare function args(): void;

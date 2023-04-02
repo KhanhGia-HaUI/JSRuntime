@@ -18,7 +18,15 @@ namespace JSRuntime {
      */
 
 
-    export function evaluate(): void {
+    export function evaluate(args: Array<string>): void {
+
+        Console.WriteLine("Argument size: " + args.length);
+
+        for (let i = 0; i < args.length; i++) {
+
+            Console.WriteLine(args[i]);
+
+        }
 
         const time_start: number = Timer.StartTimer();
 
@@ -26,7 +34,7 @@ namespace JSRuntime {
 
         Console.WriteLine(ConsoleADB.TextGenerator("cyan", "◉ Input an empty string to continue..."));
 
-        Argument.input();
+        Input.Number.int_input(1, 3);
 
         const time_end: number = Timer.EndTimer();
 
@@ -46,4 +54,5 @@ namespace JSRuntime {
 
 }
 
-JSRuntime.evaluate();
+
+JSRuntime.evaluate((args));

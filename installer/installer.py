@@ -5,6 +5,9 @@ from urllib.request import urlopen
 import requests
 import zipfile
 from http.client import HTTPResponse
+import time
+import glob
+import shutil
 
 OWNER: str = "KhanhGia-HaUI"
 REPO: str = "JSRuntime"
@@ -14,7 +17,7 @@ SCRIPT_KEYWORD: str = r"script.zip"
 
 # fetch GitHub API
 
-def github_api_call(*fields) -> HTTPResponse:
+def github_api_call(*fields: str) -> HTTPResponse:
     return urlopen(f"https://api.github.com/{'/'.join(fields)}")
 
 # download file from github api
@@ -49,14 +52,38 @@ def uncompress_zip(zip_path: str, to_path: str) -> None:
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
         zip_ref.extractall(to_path)
 
+# clear directory
+
+
+def clear_everything(folder_path) -> None:
+    all_files = glob.glob(FileSystem.path.join(folder_path, '*'))
+
+    for file in all_files:
+        # If not a .py file, and not starting with "installer"
+        if not (file.endswith(('.py')) or file.startswith("installer")):
+            # If it's a folder, delete the folder and its contents
+            if FileSystem.path.isdir(file):
+                shutil.rmtree(file)
+            else:
+                # Delete the file
+                FileSystem.remove(file)
+
+
 # Download from GitHub
 
 
 def download_from_git() -> None:
 
+    # When time start
+
+    START_TIME: float = time.time()
+
     script_dir = FileSystem.path.dirname(FileSystem.path.abspath(__file__))
 
     try:
+
+        # clear everything
+        clear_everything("./")
 
         # download shell
         get_download(SHELL_KEYWORD, OWNER, REPO, "releases", "tags", "shell")
@@ -86,7 +113,20 @@ def download_from_git() -> None:
     except Exception as bug:
         # bug
         print(
-            f"\u001b[31m◉ Execution error: Script & Shell downloaded and uncompressed are unsuccess, please try again. {bug}")
+            f"\u001b[31m◉ Execution error:  {bug}")
+
+    # time end
+
+    END_TIME: float = time.time()
+
+    # total time = time_end - time_start
+
+    TIME_SPENT: float = (END_TIME - START_TIME)
+
+    # print out
+
+    print(
+        f"\x1b[32m◉ Execution time: {round(TIME_SPENT)}s")
 
 
 def main() -> None:
@@ -102,41 +142,43 @@ def main() -> None:
 
     # Input check
 
-    while (True):
+    while True:
+        try:
 
-        # if true -> return
-        if (int(get_result) == 1 or int(get_result) == 0):
-            break
+            # Attempt to convert the input to an integer
+            result_int = int(get_result)
 
-        # Perhaps not 0 or 1
-
-        # Force the user to reinput
-
-        print(
-            f"\u001b[31m◉ Execution error: Reinput, not valid boolean argument")
-
-        print(f"\x1b[36m◉ ", end="")
-
-        get_result = input()
+            # If the result is 0 or 1, break the loop
+            if result_int == 1 or result_int == 0:
+                break
+            else:
+                # If the input is not 0 or 1, show an error message and ask for reinput
+                print(
+                    f"\u001b[31m◉ Execution error: Reinput, not a valid boolean argument")
+                print(f"\x1b[36m◉ ", end="")
+                get_result: str = input()
+        except ValueError:
+            # If the input cannot be converted to an integer, show an error message and ask for reinput
+            print(f"\u001b[31m◉ Execution error: Reinput, not a valid integer")
+            print(f"\x1b[36m◉ ", end="")
+            get_result: str = input()
 
     # check input
 
-    match int(get_result):
+    if (int(get_result) == 1):
+        # download
 
-        case 1:
-            # download
+        download_from_git()
 
-            download_from_git()
+    elif (int(get_result) == 0):
+        # no download
 
-        case 0:
-            # no download
+        print(f"\x1b[32m◉ Execution status: Stopped download success")
 
-            print(f"\x1b[32m◉ Execution status: Stopped download success")
-
-        case _:
-            # Perhaps never have this case but just in case
-            print(
-                f"\u001b[31m◉ Execution error: No default input value founded")
+    else:
+        # Perhaps never have this case but just in case
+        print(
+            f"\u001b[31m◉ Execution error: No default input value founded")
 
     # all commands finished
 

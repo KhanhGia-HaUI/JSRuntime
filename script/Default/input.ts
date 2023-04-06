@@ -2,7 +2,7 @@
  * @param - JS Input implement C#
  */
 
-/// <reference path="../Declare/FileStystem.d.ts" />
+/// <reference path="../Declare/FileSystem.d.ts" />
 /// <reference path="../Declare/Console.d.ts" />
 /// <reference path="../Declare/ConsoleADB.d.ts" />
 /// <reference path="../JSRuntime.d.ts" />
@@ -13,7 +13,16 @@ namespace JSRuntime.Input {
      * 
      * @returns - C# ReadLine normal
      */
-    export namespace Number {
+
+
+
+    export namespace Argument {
+
+
+        /**
+         * 
+         * @returns - The input argument value as string
+         */
 
 
         export function input(): string {
@@ -94,6 +103,43 @@ namespace JSRuntime.Input {
         }
 
 
+        export function input_filepath
+            (): Array<string> {
+
+            Console.WriteLine(ConsoleADB.TextGenerator("cyan", "◉ Input file path as string to continue..."));
+
+            const filepath_list: Array<string> = new Array();
+
+            let create_new_input_file_path: string = input();
+
+            while (true) {
+
+                create_new_input_file_path = FileStream.CheckSlash(create_new_input_file_path);
+
+                if (create_new_input_file_path === "") {
+                    break;
+                }
+
+                if (FileStream.IsFile(create_new_input_file_path) || FileStream.IsDirectory(create_new_input_file_path)) {
+                    filepath_list.push(create_new_input_file_path);
+                    ConsoleADB.ExecutionCount(filepath_list.length.toString());
+                }
+
+                else {
+                    ConsoleADB.ExecutionError("The input data is not a valid file or directory on local machine");
+                }
+
+                create_new_input_file_path = input();
+
+            }
+
+
+            return filepath_list;
+        }
+
+
     }
+
+
 
 }

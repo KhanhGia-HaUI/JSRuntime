@@ -13,6 +13,8 @@ declare namespace Console {
      * @returns - console.log(that.data)
      */
 
+
+
     function WriteLine(...params: Array<string>): void;
 
 
@@ -20,6 +22,8 @@ declare namespace Console {
      * @param - C# input function
      * @returns - Output string
      */
+
+
 
     function ReadLine(): string;
 
@@ -33,5 +37,19 @@ declare namespace Console {
      */
 
     function Write(...params: Array<string>): void;
+
+
+
+
+
+    /**
+     * @returns - Char
+     */
+
+
+
+    function ReadKey(): string;
+
+
 
 }

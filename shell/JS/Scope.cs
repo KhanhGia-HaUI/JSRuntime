@@ -1,4 +1,5 @@
-﻿using Jint;
+﻿using JSRuntime.Console;
+using System.IO.Compression;
 
 namespace JSRuntime.JS
 {
@@ -94,27 +95,70 @@ namespace JSRuntime.JS
                 }
             }
 
+            public void CreateZip(string zipPath, params string[] filePaths)
+            {
+                using (ZipArchive archive = ZipFile.Open(zipPath, ZipArchiveMode.Create))
+                {
+                    foreach (string filePath in filePaths)
+                    {
+                        if (File.Exists(filePath))
+                        {
+                            string fileName = Path.GetFileName(filePath);
+                            archive.CreateEntryFromFile(filePath, fileName);
+                        }
+                        else
+                        {
+                            System.Console.WriteLine(
+                                JSRuntime.Console.ConsoleADB.TextAreaGenerator("red", $"File not found: {filePath}")
+                                );
+                        }
+                    }
+                }
+            }
+
+            public void UncompressZip(string zipPath, string outputFolder)
+            {
+                if (File.Exists(zipPath))
+                {
+                    ZipFile.ExtractToDirectory(zipPath, outputFolder);
+                }
+                else
+                {
+                    System.Console.WriteLine(JSRuntime.Console.ConsoleADB.TextAreaGenerator("red", $"Zip file not found: {zipPath}"));
+                }
+            }
+
+            public string CheckSlash(string createNewInputFilePath)
+            {
+                if (createNewInputFilePath.StartsWith("\"") && createNewInputFilePath.EndsWith("\""))
+                {
+                    createNewInputFilePath = createNewInputFilePath.Substring(1, createNewInputFilePath.Length - 2);
+                }
+                return createNewInputFilePath;
+            }
         }
-        public static void Evaluate(string script, string[] arguments)
+        public static void Evaluate(string script, string[] arguments, string placeholder)
         {
             {
-                FileSystem fileSystem = new FileSystem();
-                var engine = new Engine();
-                engine.SetValue("fs", fileSystem);
+                FileSystem fileSystem = new JSRuntime.JS.Scope.FileSystem();
+                var engine = new Jint.Engine();
+                engine.SetValue("FileStream", fileSystem);
                 engine.SetValue("Console", typeof(System.Console));
                 engine.SetValue("ConsoleADB", typeof(JSRuntime.Console.ConsoleADB));
                 engine.SetValue("args", arguments);
+                engine.SetValue("ShellDirectory", placeholder);
                 string[] moduleFiles = new[] 
                 { 
-                    "./script/Default/input.js",
-                    "./script/Default/timer.js",
+                    $"{placeholder}/script/Default/input.js",
+                    $"{placeholder}/script/Default/timer.js",
+                    $"{placeholder}/script/Default/executor.js",
                 };
                 foreach (string moduleFile in moduleFiles)
                 {
-                    string moduleContent = File.ReadAllText(moduleFile);
+                    string moduleContent = fileSystem.ReadFile(moduleFile);
                     engine.Execute(moduleContent);
                 }
-                try
+                    try
                 {
                     engine.Execute(script);
                 }

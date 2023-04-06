@@ -71,9 +71,13 @@ declare namespace ConsoleADB {
             "black",
         ...params: string[]): string;
 
+
+
     /**
      * @param - End the tool process 
      */
+
+
 
     function EndProcess(
 
@@ -93,9 +97,17 @@ declare namespace ConsoleADB {
 
 
 
+    /**
+        * 
+        * @param params - Pass any arguments here as string...
+        * @argument - String data type
+        * @returns - console.finish(that.data)
+        */
+
+    function ExecutionCount(
+        ...params: string[]): void;
+
+
 
 
 }
-
-
-declare function args(): void;

@@ -1,19 +1,18 @@
-﻿using JSRuntime.Console;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
+﻿using System.Text;
 
 namespace JSRuntime
 {
     public class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            System.Console.OutputEncoding= Encoding.UTF8;
-            JSRuntime.JS.Scope.Evaluate(System.IO.File.ReadAllText("./script/main.js"), args);
+            System.Console.OutputEncoding = Encoding.UTF8; 
+            JSRuntime.JS.Scope.FileSystem fs = new JS.Scope.FileSystem();
+            JSRuntime.JS.Scope.Evaluate(
+                fs.ReadFile($"{System.AppDomain.CurrentDomain.BaseDirectory}/script/main.js"),
+                args as string[], 
+                System.AppDomain.CurrentDomain.BaseDirectory
+                );
         }
     }
 }

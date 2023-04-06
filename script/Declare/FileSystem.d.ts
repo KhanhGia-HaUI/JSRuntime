@@ -1,8 +1,10 @@
 /**
  * @param - JS FileSystem based on C#
+ * @param - FileSystem will be based on C# & Microsoft Library
+ * @description - The tool will need to provide built-in functions to evaluate these
  */
 
-declare namespace fs {
+declare namespace FileStream {
 
     /**
      * 
@@ -125,13 +127,45 @@ declare namespace fs {
 
 
     /**
-         * 
-         * @param path - Send an file path argument want to create
-         * @returns - Deleted everything inside that directory
-         */
+     * 
+     * @param zipPath - Input the zip output directory
+     * @param filePaths - Input the filepaths as arguments
+     * @returns - Zipped file
+     */
 
-    function Arguments(
-    ): string[];
+    function CreateZip(
+        zipPath: string,
+        ...filePaths: Array<string[]>,
+    ): void;
+
+
+
+
+    /**
+     * 
+     * @param zipPath - Zip file path as argument
+     * @param outputFolder - Output folder or files
+     * @returns - Uncompressed zip out
+     */
+
+    function UncompressZip(
+        zipPath: string,
+        outputFolder: string,
+    ): void;
+
+
+
+
+    /**
+     * 
+     * @param argument - The C# shell will check if the argument contains ""
+     * @returns finished checking
+     */
+
+
+    function CheckSlash
+        (argument: string): string;
+
 
 
 }

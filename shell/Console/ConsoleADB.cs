@@ -110,6 +110,14 @@ namespace JSRuntime.Console
 
 
 
+
+        /// <summary>
+        /// Ném error ra ngoài màn hình
+        /// </summary>
+        /// <param name="list_str">Văn bản đi vào</param>
+        /// 
+
+
         public static void ExecutionFinish(params string[] list_str)
         {
             string new_empty_str = "◉ Execution finish: ";
@@ -120,6 +128,22 @@ namespace JSRuntime.Console
             JSRuntime.Console.ConsoleADB.WriteLine(JSRuntime.Console.ConsoleADB.TextGenerator("green", new_empty_str));
         }
 
+        /// <summary>
+        /// Ném error ra ngoài màn hình
+        /// </summary>
+        /// <param name="list_str">Văn bản đi vào</param>
+        /// 
+
+
+        public static void ExecutionCount(params string[] list_str)
+        {
+            string new_empty_str = "◉ Execution count: ";
+            foreach (string str in list_str)
+            {
+                new_empty_str += (str);
+            }
+            JSRuntime.Console.ConsoleADB.WriteLine(JSRuntime.Console.ConsoleADB.TextGenerator("green", new_empty_str));
+        }
 
     }
 }

@@ -1,0 +1,20 @@
+{
+    "display": "Python numpy",
+    "lines": {
+        "start": -10,
+        "end": 10,
+        "num": 100
+    },
+    "functions": [
+        {
+            "label": "sin(x)",
+            "func": "sin(x)",
+            "line": "solid"
+        },
+        {
+            "label": "cos(x)",
+            "func": "cos(x)",
+            "line": "solid"
+        }
+    ]
+}

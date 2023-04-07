@@ -19,6 +19,8 @@ This tool is free software and is GPL compliant, anyone can use and modify it as
 
 - `WindowsShortcutHandlers`
   Using C++ and XMAKE to create Windows Shortcut.
+- `Chart`
+  Using Python with numpy & matplotlib to do compute & process whole json file.
 
 ## Platform Support
 

@@ -6,29 +6,33 @@ import tkinter as tk
 from tkinter import filedialog
 import sys
 
+
 def draw_graph(
-        x_start:float = 0,
-        y_start:float = 0,
+        x_start: float = 0,
+        y_start: float = 0,
         color: str = "black",
         linestyle: str = "solid",
         alpha: float = 1,
 ) -> None:
     # Ox
-    plt.axhline(x_start, color=color, linestyle=linestyle, alpha=alpha) 
+    plt.axhline(x_start, color=color, linestyle=linestyle, alpha=alpha)
 
     # Oy
-    plt.axvline(y_start, color=color, linestyle=linestyle, alpha=alpha) 
+    plt.axvline(y_start, color=color, linestyle=linestyle, alpha=alpha)
+
 
 def write_file(
         file_path: str,
         save_data: str,
 ) -> None:
-    try: 
-        with open (file_path, "w") as file:
+    try:
+        with open(file_path, "w") as file:
             file.write(save_data)
     except Exception as bug:
-        raise RuntimeError(f"Cannot write file to {FileSystem.path(file_path)} {bug}")
-    
+        raise RuntimeError(
+            f"Cannot write file to {FileSystem.path(file_path)} {bug}")
+
+
 def read_file(
         file_path: str,
 ) -> str:
@@ -37,12 +41,15 @@ def read_file(
             data = file.read()
             return data
     except Exception as bug:
-        raise RuntimeError(f"Cannot read file {FileSystem.chdir(file_path)} {bug}")
+        raise RuntimeError(
+            f"Cannot read file {FileSystem.chdir(file_path)} {bug}")
+
 
 def read_json(
         file_path: str,
 ) -> object:
     return json.loads(read_file(file_path))
+
 
 def write_json(
         file_path: str,
@@ -54,15 +61,17 @@ def write_json(
     except Exception as bug:
         raise Exception(f"Cannot parse {file_path}, code: {bug}")
 
+
 def draw_chart(
         x: any,
         y: any,
         label: str,
         linestyle: str = "solid",
-) -> None: 
-    if not(linestyle):
+) -> None:
+    if not (linestyle):
         linestyle = "solid"
     plt.plot(x, y, label=label, linestyle=linestyle)
+
 
 def process_json_compute(
         json_data: object,
@@ -78,6 +87,7 @@ def process_json_compute(
     if not "num" in json_data["lines"]:
         raise RuntimeError(f"No property \"num\" in json.lines")
 
+
 def chart_display(
         label: str,
 ) -> None:
@@ -87,6 +97,7 @@ def chart_display(
     plt.legend()
     plt.show()
 
+
 def open_windows_explorer(
 ) -> str:
     root = tk.Tk()
@@ -95,36 +106,40 @@ def open_windows_explorer(
     # Open the File Dialog
     return filedialog.askopenfilename(title="Select a JSON file", filetypes=[("JSON files", "*.json")])
 
-def main(    
+
+def do_compute(
+        file_path: str,
 ) -> None:
-
-    file_path: str = ""
-
-    # drag & drop
-
-    if len(sys.argv) > 1:
-        file_path = sys.argv[1]
-
-
-    # Windows Explorer Open
-
-    if not file_path:
-        file_path = open_windows_explorer()
-
     json_data = (read_json(file_path))
 
     # Xử lý json trước khi bắt đầu làm
     process_json_compute(json_data)
     # Khởi tạo miền Ox
-    x = np.linspace(json_data['lines']['start'], json_data["lines"]["end"], json_data["lines"]["num"]) 
+    x = np.linspace(json_data['lines']['start'],
+                    json_data["lines"]["end"], json_data["lines"]["num"])
     # Vẽ trục tọa độ Oxy
     draw_graph()
     # Vẽ thử hàm np
     for function in json_data["functions"]:
-        draw_chart(x, eval(f"np.{function['func']}"), function['label'], function['line'])
+        draw_chart(x, eval(f"np.{function['func']}"),
+                   function['label'], function['line'])
 
-    #Draw chart
+    # Draw chart
     chart_display(json_data.get("display"))
+
+
+def main(
+) -> None:
+
+    # drag & drop
+
+    if len(sys.argv) > 1:
+        for argument in sys.argv:
+            do_compute(argument)
+    else:
+        # Windows Explorer Open
+        file_path = open_windows_explorer()
+        do_compute(file_path)
 
 
 if __name__ == "__main__":

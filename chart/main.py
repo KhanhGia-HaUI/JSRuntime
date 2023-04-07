@@ -131,11 +131,11 @@ def do_compute(
 def main(
 ) -> None:
 
-    # drag & drop
-
     if len(sys.argv) > 1:
-        for argument in sys.argv:
-            do_compute(argument)
+
+         # drag & drop
+        for argument in sys.argv[1:]:
+            do_compute(str(argument))
     else:
         # Windows Explorer Open
         file_path = open_windows_explorer()

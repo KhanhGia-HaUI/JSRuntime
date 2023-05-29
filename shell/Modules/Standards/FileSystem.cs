@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.Json;
 using System.IO;
+using static Runtime.Modules.Standards.FileSystem.FileSystem;
 
 namespace Runtime.Modules.Standards.FileSystem
 {
@@ -12,8 +13,10 @@ namespace Runtime.Modules.Standards.FileSystem
         public abstract void WriteText(string file_path, string data,string encoding);
         public abstract void CreateDirectory(string file_path);
         public abstract void DeleteDirectory(string file_path);
-
         public abstract Task<string> ReadText_Async(string file_path, string encoding);
+
+        public abstract bool DirectoryExists(string file_path);
+        public abstract bool FileExists(string file_path);
 
 
     }
@@ -48,6 +51,10 @@ namespace Runtime.Modules.Standards.FileSystem
             }
             return;
         }
+
+        public override bool DirectoryExists(string file_path) => Directory.Exists(file_path);
+
+        public override bool FileExists(string file_path) => File.Exists(file_path);
 
         public override string ReadText(string file_path, string encoding = "UTF8")
         {
@@ -109,253 +116,261 @@ namespace Runtime.Modules.Standards.FileSystem
             return;
         }
 
-        public class FormatRecords
+        
+
+    }
+
+    public class FormatRecords
+    {
+        private string _root;
+
+        private string _dir;
+
+        private string _basename;
+
+        private string _extname;
+
+        private string _name;
+
+#pragma warning disable IDE1006
+        public string root
         {
-            private string _root;
+            get { return this._root; }
 
-            private string _dir;
-
-            private string _basename;
-
-            private string _extname;
-
-            private string _name;
-
-            #pragma warning disable IDE1006
-            public string root
+            set
             {
-                get { return this._root; }
-
-                set { if (value != null)
-                    {
-                        this._root = value;
-                    }
+                if (value != null)
+                {
+                    this._root = value;
                 }
             }
-
-            public string dir
-            {
-                get { return this._dir; }
-                set
-                {
-                    if(value != null)
-                    {
-                        this._dir = value;
-                    }
-                }
-            }
-
-            public string basename
-            {
-                get { return this._basename; }
-                set
-                {
-                    if (value != null)
-                    {
-                        this._basename = value;
-                    }
-                }
-            }
-
-            public string extname
-            {
-                get { return this._extname; }
-                set
-                {
-                    if (value != null)
-                    {
-                        this._extname = value;
-                    }
-                }
-            }
-
-            public string name
-            {
-                get { return this._name; }
-                set
-                {
-                    if (value != null)
-                    {
-                        this._name = value;
-                    }
-                }
-            }
-
-            #pragma warning disable CS8618
-            public FormatRecords()
-            {
-            }
-            #pragma warning disable CS8618
-            public FormatRecords(string root, string dir, string basename, string extname, string name)
-            {
-                if(root != null)
-                {
-                    this._root = root;
-                }
-                if(dir != null)
-                {
-                    this._dir = dir;
-                }
-                if(basename != null)
-                {
-                    this._basename = basename;
-                }
-                if(extname != null)
-                {
-                    this._extname = extname;
-                }
-                if(name != null)
-                {
-                    this._name = name;
-                }
-            }
-
-
-
-            public override string ToString()
-            {
-                return JsonSerializer.Serialize<FormatRecords>(this);
-            }
-
         }
 
-        public class ParsedPath
+        public string dir
         {
-
-            #pragma warning disable IDE1006
-            public string name { get; set; }
-            public string dir { get; set; }
-            public string ext { get; set; }
-            public string baseName { get; set; }
+            get { return this._dir; }
+            set
+            {
+                if (value != null)
+                {
+                    this._dir = value;
+                }
+            }
         }
 
-        public abstract class Path_Abstract
-            // BASED ON https://nodejs.org/api/path.html with NodeJS 20.2.0 :: JS
+        public string basename
         {
-            /// <summary>
-            ///  Example: "index.html" returns "index"
-            /// </summary>
-            /// <param name="path">File path of the file or directory in local machine</param>
-            /// <param name="suffix">The replacer data</param>
-            /// <returns>Returns basename of file or directory path</returns>
-            public abstract string Basename(string path, params string[] suffix);
+            get { return this._basename; }
+            set
+            {
+                if (value != null)
+                {
+                    this._basename = value;
+                }
+            }
+        }
 
-            /// <summary>
-            /// Provides the platform-specific path delimiter:
-            /// `;` for Windows
-            /// `:` for POSIX
-            /// </summary>
-            /// <returns></returns>
+        public string extname
+        {
+            get { return this._extname; }
+            set
+            {
+                if (value != null)
+                {
+                    this._extname = value;
+                }
+            }
+        }
 
-            public abstract string Delimiter();
+        public string name
+        {
+            get { return this._name; }
+            set
+            {
+                if (value != null)
+                {
+                    this._name = value;
+                }
+            }
+        }
 
-            /// <summary>
-            /// Example: "/test/st/sf/main.js" returns "/test/st/sf"
-            /// </summary>
-            /// <param name="path">File path or directory path</param>
-            /// <returns>Returns directory contains the file or directory</returns>
-            public abstract string Dirname(string path);
-
-
-            /// <summary>
-            /// Example "main.js" returns ".js"
-            /// </summary>
-            /// <param name="path">File path or directory path</param>
-            /// <returns>Returns file extension</returns>
-            public abstract string Extname(string path);
-
-
-            public abstract FormatRecords Format(string dir, string root, string basename, string name, string ext);
-
-
-
-            public abstract bool IsAbsolute(string path);
-
-
-
-            public abstract string Join(params string[] paths);
-
-
-
-            public abstract string Normalize(string path);
-
-
-            public abstract ParsedPath Parse(string filePath);
-
-
-
-            public abstract string Relative(string from, string to);
-
-
-            public abstract string Resolve(string path);
-
-
-            public abstract string Sep();
-
-            public abstract string GetFileName(string path);
-
-
+        #pragma warning disable CS8618
+        public FormatRecords()
+        {
+        }
+        #pragma warning disable CS8618
+        public FormatRecords(string root, string dir, string basename, string extname, string name)
+        {
+            if (root != null)
+            {
+                this._root = root;
+            }
+            if (dir != null)
+            {
+                this._dir = dir;
+            }
+            if (basename != null)
+            {
+                this._basename = basename;
+            }
+            if (extname != null)
+            {
+                this._extname = extname;
+            }
+            if (name != null)
+            {
+                this._name = name;
+            }
         }
 
 
-        public class Implement_Path : Path_Abstract
+
+        public override string ToString()
         {
-            public override string Basename(string path, params string[] suffixs)
-            {
-                if(suffixs.Length == 0)
-                {
-                    return Path.GetFileName(path);
-                }
-                else
-                {
-                    var basename_without_extension = Path.GetFileName(path);
-                    foreach(var suffix in suffixs)
-                    {
-                        basename_without_extension = basename_without_extension.Replace(suffix, $"");
-                    }
-                    return basename_without_extension;
-                }
-            }
-
-            public override string Delimiter() => Runtime.Modules.Standards.Platform.CurrentPlatform() == $"windows" ? $";" : $":";
-
-            #pragma warning disable CS8603
-
-            public override string Dirname(string path) => Path.GetDirectoryName(path);
-
-            public override string Extname(string path) => Path.GetExtension(path);
-
-
-            #pragma warning disable IDE0090
-
-            public override FormatRecords Format(string dir, string root, string basename, string name, string ext) =>
-                new FormatRecords(root, dir, basename, ext, name);
-
-            public override bool IsAbsolute(string path) => Path.IsPathRooted(path);
-
-            public override string Join(params string[] paths) => Path.Join(paths);
-
-            public override string Normalize(string path) => Path.GetFullPath(path);
-
-            public override ParsedPath Parse(string filePath) =>  new ParsedPath
-                {
-                    name = this.GetFileName(filePath),
-                    dir = this.Dirname(filePath),
-                    ext = this.Extname(filePath),
-                    baseName = this.Basename(filePath),
-                };
-
-
-
-            public override string Relative(string from, string to) => Path.GetFullPath(Path.Combine(from, to));
-
-            public override string Resolve(string path) => Path.GetFullPath(path);
-
-            public override string Sep() => Runtime.Modules.Standards.Platform.CurrentPlatform() == $"windows" ? @"\" : @"/";
-
-            public override string GetFileName(string path) => Path.GetFileName(path);
-
+            return JsonSerializer.Serialize<FormatRecords>(this);
         }
+
+    }
+
+
+
+
+
+    public class ParsedPath
+    {
+
+        #pragma warning disable IDE1006
+        public string name { get; set; }
+        public string dir { get; set; }
+        public string ext { get; set; }
+        public string baseName { get; set; }
+    }
+
+    public abstract class Path_Abstract
+    // BASED ON https://nodejs.org/api/path.html with NodeJS 20.2.0 :: JS
+    {
+        /// <summary>
+        ///  Example: "index.html" returns "index"
+        /// </summary>
+        /// <param name="path">File path of the file or directory in local machine</param>
+        /// <param name="suffix">The replacer data</param>
+        /// <returns>Returns basename of file or directory path</returns>
+        public abstract string Basename(string path, params string[] suffix);
+
+        /// <summary>
+        /// Provides the platform-specific path delimiter:
+        /// `;` for Windows
+        /// `:` for POSIX
+        /// </summary>
+        /// <returns></returns>
+
+        public abstract string Delimiter();
+
+        /// <summary>
+        /// Example: "/test/st/sf/main.js" returns "/test/st/sf"
+        /// </summary>
+        /// <param name="path">File path or directory path</param>
+        /// <returns>Returns directory contains the file or directory</returns>
+        public abstract string Dirname(string path);
+
+
+        /// <summary>
+        /// Example "main.js" returns ".js"
+        /// </summary>
+        /// <param name="path">File path or directory path</param>
+        /// <returns>Returns file extension</returns>
+        public abstract string Extname(string path);
+
+
+        public abstract FormatRecords Format(string dir, string root, string basename, string name, string ext);
+
+
+
+        public abstract bool IsAbsolute(string path);
+
+
+
+        public abstract string Join(params string[] paths);
+
+
+
+        public abstract string Normalize(string path);
+
+
+        public abstract ParsedPath Parse(string filePath);
+
+
+
+        public abstract string Relative(string from, string to);
+
+
+        public abstract string Resolve(string path);
+
+
+        public abstract string Sep();
+
+        public abstract string GetFileName(string path);
+
+
+    }
+
+
+    public class Implement_Path : Path_Abstract
+    {
+        public override string Basename(string path, params string[] suffixs)
+        {
+            if (suffixs.Length == 0)
+            {
+                return Path.GetFileName(path);
+            }
+            else
+            {
+                var basename_without_extension = Path.GetFileName(path);
+                foreach (var suffix in suffixs)
+                {
+                    basename_without_extension = basename_without_extension.Replace(suffix, $"");
+                }
+                return basename_without_extension;
+            }
+        }
+
+        public override string Delimiter() => Runtime.Modules.Standards.Platform.CurrentPlatform() == $"windows" ? $";" : $":";
+
+        #pragma warning disable CS8603
+
+        public override string Dirname(string path) => Path.GetDirectoryName(path);
+
+        public override string Extname(string path) => Path.GetExtension(path);
+
+
+        #pragma warning disable IDE0090
+
+        public override FormatRecords Format(string dir, string root, string basename, string name, string ext) =>
+            new FormatRecords(root, dir, basename, ext, name);
+
+        public override bool IsAbsolute(string path) => Path.IsPathRooted(path);
+
+        public override string Join(params string[] paths) => Path.Join(paths);
+
+        public override string Normalize(string path) => Path.GetFullPath(path);
+
+        public override ParsedPath Parse(string filePath) => new ParsedPath
+        {
+            name = this.GetFileName(filePath),
+            dir = this.Dirname(filePath),
+            ext = this.Extname(filePath),
+            baseName = this.Basename(filePath),
+        };
+
+
+
+        public override string Relative(string from, string to) => Path.GetFullPath(Path.Combine(from, to));
+
+        public override string Resolve(string path) => Path.GetFullPath(path);
+
+        public override string Sep() => Runtime.Modules.Standards.Platform.CurrentPlatform() == $"windows" ? @"\" : @"/";
+
+        public override string GetFileName(string path) => Path.GetFileName(path);
 
     }
 }

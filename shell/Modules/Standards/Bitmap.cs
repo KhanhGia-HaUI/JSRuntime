@@ -328,21 +328,25 @@ namespace Runtime.Modules.Standards.Bitmap
 
         public override void ExportGifToPngs(string gifImagePath, string outputDirectory, string frame_name)
         {
-            Runtime.Modules.Standards.FileSystem.FileSystem fs = new();
-            using (Image<Rgba32> gifImage = Image.Load<Rgba32>(gifImagePath))
-            {
-                fs.CreateDirectory(outputDirectory);
+             var fs = new Runtime.Modules.Standards.FileSystem.FileSystem();
+             var path = new Runtime.Modules.Standards.FileSystem.Implement_Path();
+             using (Image<Rgba32> gifImage = Image.Load<Rgba32>(gifImagePath))
+             {
+                if(!fs.DirectoryExists(outputDirectory))
+                {
+                    fs.CreateDirectory(outputDirectory);
+                }
 
-                for (int frameIndex = 0; frameIndex < gifImage.Frames.Count; frameIndex++)
+                for (var frameIndex = 0; frameIndex < gifImage.Frames.Count; frameIndex++)
                 {
                     using (Image<Rgba32> frameImage = gifImage.Clone())
                     {
                         frameImage.Frames.RemoveFrame(frameIndex);
-                        string outputPath = Path.Combine(outputDirectory, $"{frame_name}_{frameIndex}.png");
+                        var outputPath = path.Join(outputDirectory, $"{frame_name}_{frameIndex}.png");
                         frameImage.Save(outputPath);
                     }
                 }
-            }
+             }
             return;
         }
 

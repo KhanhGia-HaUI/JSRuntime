@@ -16,7 +16,7 @@
             engine.SetValue("Console", system_engine_console);
             engine.SetValue("TypeChecker", system_engine_type_checker);
             engine.SetValue("JavaScriptEngine", engine);
-            engine.SetValue("Path", new Runtime.Modules.Standards.FileSystem.FileSystem.Implement_Path());
+            engine.SetValue("Path", new Runtime.Modules.Standards.FileSystem.Implement_Path());
             engine.SetValue("Platform", new Runtime.Modules.Standards.Platform());
 
             foreach (var Script in Scripts)

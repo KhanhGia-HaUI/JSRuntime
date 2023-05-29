@@ -6,9 +6,9 @@ namespace Runtime.Modules.Standards
 
     public abstract class Abstract_Compress
     {
-        public abstract void CompressZip<Generic_T>(string zip_output, Generic_T? files, Generic_T? directories) where Generic_T : IList<string>;
+        public abstract byte[] CompressZip<Generic_T>(string zip_output, Generic_T? files, Generic_T? directories) where Generic_T : IList<string>;
 
-        public abstract Task CompressZipAsync<Generic_T>(string zip_output, Generic_T? files, Generic_T? directories) where Generic_T : IList<string>;
+        public abstract Task<byte[]> CompressZipAsync<Generic_T>(string zip_output, Generic_T? files, Generic_T? directories) where Generic_T : IList<string>;
 
         public abstract void UncompressZip(string zip_input, string extracted_directory);
 
@@ -17,23 +17,28 @@ namespace Runtime.Modules.Standards
         public abstract byte[] CompressZlibBytes<Generic_T>(Generic_T data, int compression_level);
 
         public abstract byte[] UncompressZlibBytes<Generic_T>(Generic_T zlibData) where Generic_T : IList<byte>;
+
     }
+
+
     public class Compress : Abstract_Compress
     {
-        public override void CompressZip<Generic_T>(string zip_output, Generic_T? files, Generic_T? directories) where Generic_T : default
+
+
+        public override byte[] CompressZip<Generic_T>(string zip_output, Generic_T? files, Generic_T? directories) where Generic_T : default
         {
-            #pragma warning disable IDE0063
+            using var memoryStream = new MemoryStream();
             using (var zip = new ZipFile())
             {
-                if(files != null)
+                if (files != null)
                 {
                     foreach (string file in files)
                     {
                         zip.AddFile(file);
                     }
                 }
-                
-                if(directories != null)
+
+                if (directories != null)
                 {
                     foreach (string directory in directories)
                     {
@@ -41,37 +46,38 @@ namespace Runtime.Modules.Standards
                     }
                 }
 
-                zip.Save(zip_output);
+                zip.Save(memoryStream);
             }
-            return;
+
+            return memoryStream.ToArray();
         }
 
-        public override async Task CompressZipAsync<Generic_T>(string zipOutput, Generic_T? files, Generic_T? directories) where Generic_T : default
+
+        public override async Task<byte[]> CompressZipAsync<Generic_T>(string zipOutput, Generic_T? files, Generic_T? directories) where Generic_T : default
         {
+            using var memoryStream = new MemoryStream();
             await Task.Run(() =>
             {
-                using (var zip = new ZipFile())
+                using var zip = new ZipFile();
+                if (files != null)
                 {
-                    if (files != null)
+                    foreach (string file in files)
                     {
-                        foreach (string file in files)
-                        {
-                            zip.AddFile(file);
-                        }
+                        zip.AddFile(file);
                     }
-
-                    if (directories != null)
-                    {
-                        foreach (string directory in directories)
-                        {
-                            zip.AddDirectory(directory);
-                        }
-                    }
-
-                    zip.Save(zipOutput);
                 }
+
+                if (directories != null)
+                {
+                    foreach (string directory in directories)
+                    {
+                        zip.AddDirectory(directory);
+                    }
+                }
+
+                zip.Save(memoryStream);
             });
-            return;
+            return memoryStream.ToArray();
         }
 
         /// <summary>
@@ -81,6 +87,8 @@ namespace Runtime.Modules.Standards
         /// <param name="data"></param>
         /// <param name="compression_level">0, 1, 2, 3, 4, 5, 6, 7, 8, 9. 10 = None, 11 = Best, 12 = speed, all other case using default</param>
         /// <returns></returns>
+        /// 
+        
 
         public override byte[] CompressZlibBytes<Generic_T>(Generic_T data, int compression_level)
         {
@@ -103,23 +111,21 @@ namespace Runtime.Modules.Standards
                 
             };
 
-            using (var memoryStream = new MemoryStream())
+            using var memoryStream = new MemoryStream();
+            using (var zlibStream = new ZlibStream(memoryStream, CompressionMode.Compress, compressionLevel))
             {
-                using (var zlibStream = new ZlibStream(memoryStream, CompressionMode.Compress, compressionLevel))
+                using var writer = new StreamWriter(zlibStream);
                 {
-                    using (var writer = new StreamWriter(zlibStream))
-                    {
-                        writer.Write(data);
-                    }
+                    writer.Write(data);
                 }
-
-                return memoryStream.ToArray();
             }
+
+            return memoryStream.ToArray();
         }
 
         public override void UncompressZip(string zip_input, string extracted_directory)
         {
-            using (var zip = ZipFile.Read(zip_input))
+            using var zip = ZipFile.Read(zip_input);
             {
                 zip.ExtractAll(extracted_directory);
             }
@@ -131,7 +137,7 @@ namespace Runtime.Modules.Standards
         {
             await Task.Run(() =>
             {
-                using (var zip = ZipFile.Read(zip_input))
+                using var zip = ZipFile.Read(zip_input);
                 {
                     zip.ExtractAll(extracted_directory);
                 }
@@ -156,9 +162,9 @@ namespace Runtime.Modules.Standards
                 throw new ArgumentException($"Invalid zlib. Expected byte array or byte[].");
             }
 
-            using (var inputStream = new MemoryStream(zlibBytes))
-            using (var zlibStream = new ZlibStream(inputStream, CompressionMode.Decompress))
-            using (var outputStream = new MemoryStream())
+            using var inputStream = new MemoryStream(zlibBytes);
+            using var zlibStream = new ZlibStream(inputStream, CompressionMode.Decompress);
+            using var outputStream = new MemoryStream();
             {
                 zlibStream.CopyTo(outputStream);
                 return outputStream.ToArray();

@@ -4,19 +4,22 @@
     {
         public static void Evaluate(string Script_Directory, string[] args)
         {
-            var fs = new Runtime.Modules.Standards.FileSystem.FileSystem();
+            var fs = new Runtime.Modules.Standards.IOModule.FileSystem();
             var main_js = $"{Script_Directory}/main.js";
             var system_engine_console = new Runtime.Modules.Standards.System();
             var system_engine_type_checker = new Runtime.Modules.Standards.TypeChecker();
             var engine = new Jint.Engine();
-            string[] Scripts =  { };
+
+            #pragma warning disable CA1825
+
+            var Scripts =  new string[] { };
 
             engine.SetValue("fs", fs);
             engine.SetValue("args", args);
             engine.SetValue("Console", system_engine_console);
             engine.SetValue("TypeChecker", system_engine_type_checker);
             engine.SetValue("JavaScriptEngine", engine);
-            engine.SetValue("Path", new Runtime.Modules.Standards.FileSystem.Implement_Path());
+            engine.SetValue("Path", new Runtime.Modules.Standards.IOModule.Implement_Path());
             engine.SetValue("Platform", new Runtime.Modules.Standards.Platform());
 
             foreach (var Script in Scripts)

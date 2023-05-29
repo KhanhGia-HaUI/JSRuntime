@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.InteropServices;
+using System.IO;
 
 namespace Runtime.Modules.Standards
 {
@@ -11,6 +7,7 @@ namespace Runtime.Modules.Standards
     public abstract class Platform_Abstract
     {
         public abstract string ThisPlatform();
+
     }
 
     public class Platform : Platform_Abstract
@@ -40,6 +37,12 @@ namespace Runtime.Modules.Standards
                 return "unknown";
             }
         }
+
+        #pragma warning disable CS8601
+
+        public readonly static string CurrentDirectoryContainsShell = Path.GetDirectoryName(Environment.ProcessPath);
+
+
         public static string CurrentPlatform()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

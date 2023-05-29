@@ -1,15 +1,13 @@
-﻿using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
+﻿using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Formats.Png;
-using System.Runtime.CompilerServices;
 
 namespace Runtime.Modules.Standards.Bitmap
 {
     public class Dimension<Generic_T>
     {
-        private Generic_T _width;
+        protected Generic_T _width;
 
-        private Generic_T _height;
+        protected Generic_T _height;
 
         #pragma warning disable IDE1006
 
@@ -328,8 +326,8 @@ namespace Runtime.Modules.Standards.Bitmap
 
         public override void ExportGifToPngs(string gifImagePath, string outputDirectory, string frame_name)
         {
-             var fs = new Runtime.Modules.Standards.FileSystem.FileSystem();
-             var path = new Runtime.Modules.Standards.FileSystem.Implement_Path();
+             var fs = new Runtime.Modules.Standards.IOModule.FileSystem();
+             var path = new Runtime.Modules.Standards.IOModule.Implement_Path();
              using (Image<Rgba32> gifImage = Image.Load<Rgba32>(gifImagePath))
              {
                 if(!fs.DirectoryExists(outputDirectory))
@@ -350,6 +348,7 @@ namespace Runtime.Modules.Standards.Bitmap
             return;
         }
 
+
         public override Task SaveImageAsync(string outputPath, Image<Rgba32> image)
         {
             using (FileStream outputStream = File.OpenWrite(outputPath))
@@ -359,5 +358,7 @@ namespace Runtime.Modules.Standards.Bitmap
 
             return Task.CompletedTask;
         }
+
+
     }
 }

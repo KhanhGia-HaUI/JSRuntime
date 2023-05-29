@@ -1,28 +1,48 @@
 ﻿using System;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
-using System.IO;
-using static Runtime.Modules.Standards.FileSystem.FileSystem;
 
-namespace Runtime.Modules.Standards.FileSystem
+namespace Runtime.Modules.Standards.IOModule
 {
 
     public abstract class File_System_Abstract
     {
         public abstract string ReadText(string file_path, string encoding);
+
         public abstract void WriteText(string file_path, string data,string encoding);
+
         public abstract void CreateDirectory(string file_path);
+
         public abstract void DeleteDirectory(string file_path);
-        public abstract Task<string> ReadText_Async(string file_path, string encoding);
+
+        public abstract Task<string> ReadTextAsync(string file_path, string encoding);
 
         public abstract bool DirectoryExists(string file_path);
+
         public abstract bool FileExists(string file_path);
+
+        public abstract Task WriteTextAsync(string filepath, string data, string encoding);
+
+        public abstract Generic_T ReadJson<Generic_T>(string filepath) where Generic_T : class;
+
+        public abstract void WriteJson<Generic_T>(string output_path, Generic_T json_object) where Generic_T : class;
+
+        public abstract Task<Generic_T> ReadJsonAsync<Generic_T>(string filepath) where Generic_T : class;
+
+        public abstract Task WriteJsonAsync<Generic_T>(string output_path, Generic_T json_object) where Generic_T : class;
 
 
     }
 
+
     public class FileSystem : File_System_Abstract
     {
+        private readonly JsonSerializerOptions ConstraintJsonSerializerOptions = new () { 
+            WriteIndented = true,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+        };
+
         public FileSystem() { }
 
 
@@ -56,6 +76,20 @@ namespace Runtime.Modules.Standards.FileSystem
 
         public override bool FileExists(string file_path) => File.Exists(file_path);
 
+
+        #pragma warning disable CS8603
+
+        public override Generic_T ReadJson<Generic_T>(string filepath) where Generic_T : class
+        {
+            return JsonSerializer.Deserialize<Generic_T>(this.ReadText(filepath, "UTF8"));
+        }
+
+        public override async Task<Generic_T> ReadJsonAsync<Generic_T>(string filepath) where Generic_T : class
+        {
+            Generic_T json_object = await Task.Run(()=>this.ReadJson<Generic_T>(filepath));
+            return json_object;
+        }
+
         public override string ReadText(string file_path, string encoding = "UTF8")
         {
             return encoding switch
@@ -68,7 +102,7 @@ namespace Runtime.Modules.Standards.FileSystem
             } ;
         }
 
-        public override Task<string> ReadText_Async(string file_path, string encoding = "UTF8")
+        public override Task<string> ReadTextAsync(string file_path, string encoding = "UTF8")
         {
             return encoding switch
             {
@@ -78,6 +112,19 @@ namespace Runtime.Modules.Standards.FileSystem
                 "unicode" => File.ReadAllTextAsync(file_path, encoding: Encoding.Unicode),
                 _ => File.ReadAllTextAsync(file_path, encoding: Encoding.Default),
             };
+        }
+
+        public override void WriteJson<Generic_T>(string output_path, Generic_T json_object) where Generic_T : class
+        {
+            var serialize_json = JsonSerializer.Serialize<Generic_T>(json_object, this.ConstraintJsonSerializerOptions);
+            this.WriteText(output_path, serialize_json);
+            return;
+        }
+
+        public override async Task WriteJsonAsync<Generic_T>(string output_path, Generic_T json_object) where Generic_T : class
+        {
+            await Task.Run(()=>this.WriteJson<Generic_T>(output_path, json_object));
+            return;
         }
 
         public override void WriteText(string filepath, string data, string encoding = "UTF8")
@@ -116,7 +163,30 @@ namespace Runtime.Modules.Standards.FileSystem
             return;
         }
 
-        
+        public override async Task WriteTextAsync(string filepath, string data, string encoding = "UTF8")
+        {
+            switch (encoding.ToLower())
+            {
+                case "utf8":
+                    await File.WriteAllTextAsync(filepath, data, Encoding.UTF8);
+                    break;
+                case "ascii":
+                    await File.WriteAllTextAsync(filepath, data, Encoding.ASCII);
+                    break;
+                case "latin1":
+                    await File.WriteAllTextAsync(filepath, data, Encoding.Latin1);
+                    break;
+                case "unicode":
+                    await File.WriteAllTextAsync(filepath, data, Encoding.Unicode);
+                    break;
+                default:
+                    await File.WriteAllTextAsync(filepath, data, Encoding.Default);
+                    break;
+            }
+        }
+
+
+
 
     }
 
@@ -132,7 +202,7 @@ namespace Runtime.Modules.Standards.FileSystem
 
         private string _name;
 
-#pragma warning disable IDE1006
+        #pragma warning disable IDE1006
         public string root
         {
             get { return this._root; }
@@ -243,7 +313,7 @@ namespace Runtime.Modules.Standards.FileSystem
         public string name { get; set; }
         public string dir { get; set; }
         public string ext { get; set; }
-        public string baseName { get; set; }
+        public string basename { get; set; }
     }
 
     public abstract class Path_Abstract
@@ -359,7 +429,7 @@ namespace Runtime.Modules.Standards.FileSystem
             name = this.GetFileName(filePath),
             dir = this.Dirname(filePath),
             ext = this.Extname(filePath),
-            baseName = this.Basename(filePath),
+            basename = this.Basename(filePath),
         };
 
 

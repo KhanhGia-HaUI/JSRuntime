@@ -4,8 +4,18 @@
     {
         public static void Main(string[] args)
         {
-            Runtime.Modules.JavaScript.Engine.Evaluate($"./Script", args);
-            Console.ReadKey();
+            try
+            {
+                Runtime.Modules.JavaScript.Engine.Evaluate($"{Runtime.Modules.Standards.Platform.CurrentDirectoryContainsShell}/Script", args);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            finally
+            {
+                Console.ReadKey();
+            }
         }
     }
 }

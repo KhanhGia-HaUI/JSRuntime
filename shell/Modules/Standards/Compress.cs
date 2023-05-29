@@ -14,12 +14,27 @@ namespace Runtime.Modules.Standards
 
         public abstract Task UncompressZipAsync(string zip_input, string extracted_directory);
 
-        public abstract byte[] CompressZlibBytes<Generic_T>(Generic_T data, int compression_level);
+        public abstract byte[] CompressZlibBytes<Generic_T>(Generic_T data, ZlibCompressionLevel compression_level);
 
         public abstract byte[] UncompressZlibBytes<Generic_T>(Generic_T zlibData) where Generic_T : IList<byte>;
 
     }
-
+    public enum ZlibCompressionLevel
+    {
+        Level0,
+        Level1,
+        Level2,
+        Level3,
+        Level4,
+        Level5,
+        Level6,
+        Level7,
+        Level8,
+        Level9,
+        None,
+        BestCompression,
+        BestSpeed,
+    }
 
     public class Compress : Abstract_Compress
     {
@@ -90,23 +105,23 @@ namespace Runtime.Modules.Standards
         /// 
         
 
-        public override byte[] CompressZlibBytes<Generic_T>(Generic_T data, int compression_level)
+        public override byte[] CompressZlibBytes<Generic_T>(Generic_T data, ZlibCompressionLevel compression_level)
         {
             var compressionLevel = compression_level switch
             {
-                0 => CompressionLevel.Level0,
-                1 => CompressionLevel.Level1,
-                2 => CompressionLevel.Level2,
-                3 => CompressionLevel.Level3,
-                4 => CompressionLevel.Level4,
-                5 => CompressionLevel.Level5,
-                6 => CompressionLevel.Level6,
-                7 => CompressionLevel.Level7,
-                8 => CompressionLevel.Level8,
-                9 => CompressionLevel.Level9,
-                10 => CompressionLevel.None,
-                11 => CompressionLevel.BestCompression,
-                12 => CompressionLevel.BestSpeed,
+                ZlibCompressionLevel.Level0 => CompressionLevel.Level0,
+                ZlibCompressionLevel.Level1 => CompressionLevel.Level1,
+                ZlibCompressionLevel.Level2 => CompressionLevel.Level2,
+                ZlibCompressionLevel.Level3 => CompressionLevel.Level3,
+                ZlibCompressionLevel.Level4 => CompressionLevel.Level4,
+                ZlibCompressionLevel.Level5 => CompressionLevel.Level5,
+                ZlibCompressionLevel.Level6 => CompressionLevel.Level6,
+                ZlibCompressionLevel.Level7 => CompressionLevel.Level7,
+                ZlibCompressionLevel.Level8 => CompressionLevel.Level8,
+                ZlibCompressionLevel.Level9 => CompressionLevel.Level9,
+                ZlibCompressionLevel.None => CompressionLevel.None,
+                ZlibCompressionLevel.BestCompression => CompressionLevel.BestCompression,
+                ZlibCompressionLevel.BestSpeed => CompressionLevel.BestSpeed,
                 _ => CompressionLevel.Default,
                 
             };

@@ -1,28 +1,35 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 
 namespace Runtime.Modules.Standards.IOModule
 {
 
+    public enum EncodingType
+    {
+        UTF8,
+        ASCII,
+        LATIN1,
+        UNICODE,
+    }
+
     public abstract class File_System_Abstract
     {
-        public abstract string ReadText(string file_path, string encoding);
+        public abstract string ReadText(string file_path, EncodingType encoding);
 
-        public abstract void WriteText(string file_path, string data,string encoding);
+        public abstract void WriteText(string file_path, string data, EncodingType encoding);
 
         public abstract void CreateDirectory(string file_path);
 
         public abstract void DeleteDirectory(string file_path);
 
-        public abstract Task<string> ReadTextAsync(string file_path, string encoding);
+        public abstract Task<string> ReadTextAsync(string file_path, EncodingType encoding);
 
         public abstract bool DirectoryExists(string file_path);
 
         public abstract bool FileExists(string file_path);
 
-        public abstract Task WriteTextAsync(string filepath, string data, string encoding);
+        public abstract Task WriteTextAsync(string filepath, string data, EncodingType encoding);
 
         public abstract Generic_T ReadJson<Generic_T>(string filepath) where Generic_T : class;
 
@@ -31,6 +38,16 @@ namespace Runtime.Modules.Standards.IOModule
         public abstract Task<Generic_T> ReadJsonAsync<Generic_T>(string filepath) where Generic_T : class;
 
         public abstract Task WriteJsonAsync<Generic_T>(string output_path, Generic_T json_object) where Generic_T : class;
+
+        public abstract void OutFile<Generic_T>(string output_path, Generic_T data);
+
+        public abstract Task OutFileAsync<Generic_T>(string output_path, Generic_T data);
+
+        public abstract void WriteFile<Generic_T>(string output_file, Generic_T data);
+
+        public abstract Task WriteFileAsync<Generic_T>(string output_file, Generic_T data);
+
+        protected abstract void WriteBufferToFile(string filePath, byte[] buffer);
 
 
     }
@@ -44,6 +61,70 @@ namespace Runtime.Modules.Standards.IOModule
         };
 
         public FileSystem() { }
+
+        protected override void WriteBufferToFile(string filePath, byte[] buffer)
+        {
+            using var fileStream = new FileStream(filePath, FileMode.Create);
+            {
+                fileStream.Write(buffer, 0, buffer.Length);
+            }
+            return;
+        }
+
+        public override void WriteFile<Generic_T>(string filePath, Generic_T data)
+        {
+            if (data is string)
+            {
+                #pragma warning disable CS8600
+                string dataString = data as string;
+
+                #pragma warning disable CS8604
+                byte[] buffer = Encoding.UTF8.GetBytes(dataString);
+                this.WriteBufferToFile(filePath, buffer);
+            }
+            else if (data is IList<byte> byteArrays)
+            {
+                using var fileStream = new FileStream(filePath, FileMode.Create);
+
+                foreach (byte byteArray in byteArrays)
+                {
+                    fileStream.WriteByte(byteArray);
+                }
+            }
+            else
+            {
+                throw new ArgumentException($"Invalid data type. Expecting string or collection of bytes.");
+            }
+            return;
+        }
+
+
+        public override async Task WriteFileAsync<Generic_T>(string filePath, Generic_T data)
+        {
+            await Task.Run(() =>
+            {
+                if (data is string)
+                {
+                    string dataString = data as string;
+                    byte[] buffer = Encoding.UTF8.GetBytes(dataString);
+                    this.WriteBufferToFile(filePath, buffer);
+                }
+                else if (data is IList<byte> byteArrays)
+                {
+                    using var fileStream = new FileStream(filePath, FileMode.Create);
+
+                    foreach (byte byteArray in byteArrays)
+                    {
+                        fileStream.WriteByte(byteArray);
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException($"Invalid data type. Expecting string or collection of bytes.");
+                }
+            });
+            return;
+        }
 
 
         public override void CreateDirectory(string path) {
@@ -81,7 +162,7 @@ namespace Runtime.Modules.Standards.IOModule
 
         public override Generic_T ReadJson<Generic_T>(string filepath) where Generic_T : class
         {
-            return JsonSerializer.Deserialize<Generic_T>(this.ReadText(filepath, "UTF8"));
+            return JsonSerializer.Deserialize<Generic_T>(this.ReadText(filepath, EncodingType.UTF8));
         }
 
         public override async Task<Generic_T> ReadJsonAsync<Generic_T>(string filepath) where Generic_T : class
@@ -90,26 +171,26 @@ namespace Runtime.Modules.Standards.IOModule
             return json_object;
         }
 
-        public override string ReadText(string file_path, string encoding = "UTF8")
+        public override string ReadText(string file_path, EncodingType encoding)
         {
             return encoding switch
             {
-                "utf8" => File.ReadAllText(file_path, encoding: Encoding.UTF8),
-                "ascii" => File.ReadAllText(file_path, encoding: Encoding.ASCII),
-                "latin1" => File.ReadAllText(file_path, encoding: Encoding.Latin1),
-                "unicode" => File.ReadAllText(file_path, encoding: Encoding.Unicode),
+                EncodingType.UTF8 => File.ReadAllText(file_path, encoding: Encoding.UTF8),
+                EncodingType.ASCII => File.ReadAllText(file_path, encoding: Encoding.ASCII),
+                EncodingType.LATIN1 => File.ReadAllText(file_path, encoding: Encoding.Latin1),
+                EncodingType.UNICODE => File.ReadAllText(file_path, encoding: Encoding.Unicode),
                 _ => File.ReadAllText(file_path, encoding: Encoding.Default),
             } ;
         }
 
-        public override Task<string> ReadTextAsync(string file_path, string encoding = "UTF8")
+        public override Task<string> ReadTextAsync(string file_path, EncodingType encoding)
         {
             return encoding switch
             {
-                "utf8" => File.ReadAllTextAsync(file_path, encoding: Encoding.UTF8),
-                "ascii" => File.ReadAllTextAsync(file_path, encoding: Encoding.ASCII),
-                "latin1" => File.ReadAllTextAsync(file_path, encoding: Encoding.Latin1),
-                "unicode" => File.ReadAllTextAsync(file_path, encoding: Encoding.Unicode),
+                EncodingType.UTF8 => File.ReadAllTextAsync(file_path, encoding: Encoding.UTF8),
+                EncodingType.ASCII => File.ReadAllTextAsync(file_path, encoding: Encoding.ASCII),
+                EncodingType.LATIN1 => File.ReadAllTextAsync(file_path, encoding: Encoding.Latin1),
+                EncodingType.UNICODE => File.ReadAllTextAsync(file_path, encoding: Encoding.Unicode),
                 _ => File.ReadAllTextAsync(file_path, encoding: Encoding.Default),
             };
         }
@@ -117,7 +198,7 @@ namespace Runtime.Modules.Standards.IOModule
         public override void WriteJson<Generic_T>(string output_path, Generic_T json_object) where Generic_T : class
         {
             var serialize_json = JsonSerializer.Serialize<Generic_T>(json_object, this.ConstraintJsonSerializerOptions);
-            this.WriteText(output_path, serialize_json);
+            this.WriteText(output_path, serialize_json, EncodingType.UTF8);
             return;
         }
 
@@ -127,27 +208,27 @@ namespace Runtime.Modules.Standards.IOModule
             return;
         }
 
-        public override void WriteText(string filepath, string data, string encoding = "UTF8")
+        public override void WriteText(string filepath, string data, EncodingType encoding)
         {
             switch(encoding)
             {
-                case "utf8":
+                case EncodingType.UTF8:
                     {
                         File.WriteAllText(filepath, data, encoding: Encoding.UTF8);
                         break;
                     }
-                case "ascii":
+                case EncodingType.ASCII:
                     {
                         File.WriteAllText(filepath, data, encoding: Encoding.ASCII);
                         break;
                     }
-                case "latin1":
+                case EncodingType.LATIN1:
                     {
                         File.WriteAllText(filepath, data, encoding: Encoding.Latin1);
                         break;
                     }
 
-                case "unicode":
+                case EncodingType.UNICODE:
                     {
                         File.WriteAllText(filepath, data, encoding: Encoding.Unicode);
                         break;
@@ -163,20 +244,20 @@ namespace Runtime.Modules.Standards.IOModule
             return;
         }
 
-        public override async Task WriteTextAsync(string filepath, string data, string encoding = "UTF8")
+        public override async Task WriteTextAsync(string filepath, string data, EncodingType encoding)
         {
-            switch (encoding.ToLower())
+            switch (encoding)
             {
-                case "utf8":
+                case EncodingType.UTF8:
                     await File.WriteAllTextAsync(filepath, data, Encoding.UTF8);
                     break;
-                case "ascii":
+                case EncodingType.ASCII:
                     await File.WriteAllTextAsync(filepath, data, Encoding.ASCII);
                     break;
-                case "latin1":
+                case EncodingType.LATIN1:
                     await File.WriteAllTextAsync(filepath, data, Encoding.Latin1);
                     break;
-                case "unicode":
+                case EncodingType.UNICODE:
                     await File.WriteAllTextAsync(filepath, data, Encoding.Unicode);
                     break;
                 default:
@@ -185,9 +266,45 @@ namespace Runtime.Modules.Standards.IOModule
             }
         }
 
+        public override void OutFile<Generic_T>(string output_path, Generic_T data)
+        {
+            List<string> file_path_collection = output_path.Replace("\\", "/").Split("/").ToList<string>();
+            var last_index = file_path_collection.Count - 1;
+            string requirement_file = file_path_collection.ElementAt<string>(last_index);
+            file_path_collection.RemoveAt(last_index);
+            var path = new Runtime.Modules.Standards.IOModule.Implement_Path();
+            var output_directory = "";
+            foreach(var directory in file_path_collection.ToArray<string>())
+            {
+                if(!this.DirectoryExists(directory))
+                {
+                    this.CreateDirectory(directory);
+                }
+                output_directory = path.Join(output_directory, directory);
+            }
+            this.WriteFile<Generic_T>(path.Join(output_directory, requirement_file), data);
+            return;
+        }
 
-
-
+        public override async Task OutFileAsync<Generic_T>(string output_path, Generic_T data)
+        {
+            List<string> file_path_collection = output_path.Replace("\\", "/").Split("/").ToList<string>();
+            var last_index = file_path_collection.Count - 1;
+            string requirement_file = file_path_collection[last_index];
+            file_path_collection.RemoveAt(last_index);
+            var path = new Runtime.Modules.Standards.IOModule.Implement_Path();
+            var output_directory = "";
+            foreach (var directory in file_path_collection.ToArray<string>())
+            {
+                if (!this.DirectoryExists(directory))
+                {
+                    this.CreateDirectory(directory);
+                }
+                output_directory = path.Join(output_directory, directory);
+            }
+            await this.WriteFileAsync<Generic_T>(path.Join(output_directory, requirement_file), data);
+            return;
+        }
     }
 
     public class FormatRecords

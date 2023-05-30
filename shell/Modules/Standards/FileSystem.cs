@@ -47,9 +47,16 @@ namespace Runtime.Modules.Standards.IOModule
 
         protected abstract void WriteBufferToFile(string filePath, byte[] buffer);
 
+        public abstract string[] ReadDirectory(string directory, Runtime.Modules.Standards.IOModule.ReadDirectory ReadOption);
+
 
     }
 
+    public enum ReadDirectory
+    {
+        OnlyCurrentDirectory,
+        AllNestedDirectory,
+    }
 
     public class FileSystem : File_System_Abstract
     {
@@ -299,6 +306,16 @@ namespace Runtime.Modules.Standards.IOModule
             await this.WriteFileAsync<Generic_T>(path.Join(output_directory, requirement_file), data);
             return;
         }
+
+        public override string[] ReadDirectory(string directory, Runtime.Modules.Standards.IOModule.ReadDirectory ReadOption)
+        {
+            return ReadOption switch
+            {
+                Runtime.Modules.Standards.IOModule.ReadDirectory.OnlyCurrentDirectory => Directory.GetFiles(directory, "*", SearchOption.TopDirectoryOnly),
+                Runtime.Modules.Standards.IOModule.ReadDirectory.AllNestedDirectory => Directory.GetFiles(directory, "*", SearchOption.AllDirectories),
+                _ => throw new Exception(null),
+            };
+        }
     }
 
     public class FormatRecords
@@ -493,30 +510,35 @@ namespace Runtime.Modules.Standards.IOModule
 
         public abstract string GetFileName(string path);
 
+        public abstract string GetDirectoryName(string path);
+
 
     }
 
 
     public class Implement_Path : Path_Abstract
     {
-        public override string Basename(string path, params string[] suffixs)
+        public override string Basename(string path, params string[] suffixes)
         {
-            if (suffixs.Length == 0)
+            if (suffixes.Length == 0)
             {
                 return Path.GetFileName(path);
             }
             else
             {
-                var basename_without_extension = Path.GetFileName(path);
-                foreach (var suffix in suffixs)
+                var basenameWithoutExtension = Path.GetFileNameWithoutExtension(path);
+                foreach (var suffix in suffixes)
                 {
-                    basename_without_extension = basename_without_extension.Replace(suffix, $"");
+                    if (basenameWithoutExtension.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+                    {
+                        basenameWithoutExtension = basenameWithoutExtension[..^suffix.Length];
+                    }
                 }
-                return basename_without_extension;
+                return basenameWithoutExtension;
             }
         }
 
-        public override string Delimiter() => Runtime.Modules.Standards.Platform.CurrentPlatform() == $"windows" ? $";" : $":";
+        public override string Delimiter() => Path.PathSeparator.ToString();
 
         #pragma warning disable CS8603
 
@@ -524,35 +546,34 @@ namespace Runtime.Modules.Standards.IOModule
 
         public override string Extname(string path) => Path.GetExtension(path);
 
-
-        #pragma warning disable IDE0090
-
-        public override FormatRecords Format(string dir, string root, string basename, string name, string ext) =>
-            new FormatRecords(root, dir, basename, ext, name);
+        public override FormatRecords Format(string dir, string root, string baseName, string name, string ext) =>
+            new (root, dir, baseName, ext, name);
 
         public override bool IsAbsolute(string path) => Path.IsPathRooted(path);
 
-        public override string Join(params string[] paths) => Path.Join(paths);
+        public override string Join(params string[] paths) => Path.Combine(paths);
 
         public override string Normalize(string path) => Path.GetFullPath(path);
 
-        public override ParsedPath Parse(string filePath) => new ParsedPath
+        public override ParsedPath Parse(string filePath) => new()
         {
             name = this.GetFileName(filePath),
-            dir = this.Dirname(filePath),
+            dir = this.GetDirectoryName(filePath),
             ext = this.Extname(filePath),
             basename = this.Basename(filePath),
         };
 
-
-
-        public override string Relative(string from, string to) => Path.GetFullPath(Path.Combine(from, to));
+        public override string Relative(string from, string to) => Path.GetRelativePath(from, to);
 
         public override string Resolve(string path) => Path.GetFullPath(path);
 
-        public override string Sep() => Runtime.Modules.Standards.Platform.CurrentPlatform() == $"windows" ? @"\" : @"/";
+        public override string Sep() => Path.DirectorySeparatorChar.ToString();
 
         public override string GetFileName(string path) => Path.GetFileName(path);
 
+        public override string GetDirectoryName(string path)
+        {
+            return Path.GetDirectoryName(path);
+        }
     }
 }

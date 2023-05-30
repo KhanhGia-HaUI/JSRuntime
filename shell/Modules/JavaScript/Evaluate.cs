@@ -14,9 +14,10 @@
                 $"{Script_Directory}/modules/constraints/compression.js",
                 $"{Script_Directory}/modules/constraints/crypto.js",
                 $"{Script_Directory}/modules/constraints/filesystem.js",
+
             };
 
-            engine.SetValue("fs", fs);
+            engine.SetValue("Fs", fs);
             engine.SetValue("args", args);
             engine.SetValue("Console", system_engine_console);
             engine.SetValue("TypeChecker", system_engine_type_checker);

@@ -9,4 +9,13 @@ namespace Runtime.Script.Modules.FileSystem.Constraints {
         LATIN1,
         UNICODE,
     }
+
+    /**
+     * @param - Read Directory option
+     */
+
+    export enum ReadDirectory {
+        OnlyCurrentDirectory,
+        AllNestedDirectory,
+    }
 }

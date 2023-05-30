@@ -1,9 +1,19 @@
 ﻿namespace Runtime.Modules.Standards
 {
-    public class System
+
+    public abstract class SystemAbstract
     {
-        #pragma warning disable CA1822
-        public void Print(params string[] texts)
+        public abstract void Print(params string[] texts);
+
+        public abstract string? Input<T>();
+
+        public abstract void TerminateProgram();
+
+    }
+
+    public class SystemImplement : SystemAbstract
+    {
+        public override void Print(params string[] texts)
         {
             var text = "";
             foreach ( var t in texts )
@@ -13,27 +23,42 @@
             Console.WriteLine(text);
         }
 
-        public string? Input<T>()
+        public override string? Input<T>()
         {
             #pragma warning disable CS8600
             string data = Console.ReadLine();
             return data;
         }
+
+        public override void TerminateProgram()
+        {
+            Console.ReadKey();
+            return;
+        }
     }
 
-    public class TypeChecker
+    public abstract class TypeCheckerAbstract
     {
-        public string GetStrictType(object data)
+        public abstract string GetStrictType(object data);
+
+        protected abstract Type GetDataType(object data);
+
+        protected abstract string GetTypeName(Type type);
+    }
+
+    public class TypeChecker : TypeCheckerAbstract
+    {
+        public override string GetStrictType(object data)
         {
             return GetTypeName(GetDataType(data));
         }
 
-        private Type GetDataType(object data)
+        protected override Type GetDataType(object data)
         {
             return data.GetType();
         }
 
-        private string GetTypeName(Type type)
+        protected override string GetTypeName(Type type)
         {
             if (type == typeof(bool))
             {

@@ -6,13 +6,15 @@
         {
             var fs = new Runtime.Modules.Standards.IOModule.FileSystem();
             var main_js = $"{Script_Directory}/main.js";
-            var system_engine_console = new Runtime.Modules.Standards.System();
+            var system_engine_console = new Runtime.Modules.Standards.SystemImplement();
             var system_engine_type_checker = new Runtime.Modules.Standards.TypeChecker();
             var engine = new Jint.Engine();
 
-            #pragma warning disable CA1825
-
-            var Scripts =  new string[] { };
+            var Scripts = new string[] {
+                $"{Script_Directory}/modules/constraints/compression.js",
+                $"{Script_Directory}/modules/constraints/crypto.js",
+                $"{Script_Directory}/modules/constraints/filesystem.js",
+            };
 
             engine.SetValue("fs", fs);
             engine.SetValue("args", args);
@@ -21,6 +23,10 @@
             engine.SetValue("JavaScriptEngine", engine);
             engine.SetValue("Path", new Runtime.Modules.Standards.IOModule.Implement_Path());
             engine.SetValue("Platform", new Runtime.Modules.Standards.Platform());
+            engine.SetValue("DotNetBitmap", new Runtime.Modules.Standards.Bitmap.Bitmap_Implement());
+            engine.SetValue("Crypto", new Runtime.Modules.Standards.ImplementCrypto());
+            engine.SetValue("Compress", new Runtime.Modules.Standards.ImplementCrypto());
+            engine.SetValue("JsonLibrary", new Runtime.Modules.Standards.JsonImplement());
 
             foreach (var Script in Scripts)
             {
@@ -31,7 +37,7 @@
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error executing script {Script}: {ex}");
+                    system_engine_console.Print($"Error executing script {Script}: {ex}");
                 }
             }
 
@@ -41,7 +47,7 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error executing main script: {ex}");
+                system_engine_console.Print($"Error executing main script: {ex}");
             }
             return;
         }

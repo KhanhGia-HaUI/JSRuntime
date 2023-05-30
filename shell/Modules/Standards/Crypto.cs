@@ -40,9 +40,9 @@ namespace Runtime.Modules.Standards
         ISO10126,
     }
 
-    public class Crypto : Crypto_Abstract
+    public class ImplementCrypto : Crypto_Abstract
     {
-        public Crypto() { }
+        public ImplementCrypto() { }
 
 
         public override string ComputeMD5Hash<Generic_T>(Generic_T data) where Generic_T : default

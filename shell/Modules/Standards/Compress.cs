@@ -94,15 +94,6 @@ namespace Runtime.Modules.Standards
             });
             return memoryStream.ToArray();
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="Generic_T"></typeparam>
-        /// <param name="data"></param>
-        /// <param name="compression_level">0, 1, 2, 3, 4, 5, 6, 7, 8, 9. 10 = None, 11 = Best, 12 = speed, all other case using default</param>
-        /// <returns></returns>
-        /// 
         
 
         public override byte[] CompressZlibBytes<Generic_T>(Generic_T data, ZlibCompressionLevel compression_level)

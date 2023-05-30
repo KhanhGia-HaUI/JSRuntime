@@ -2,8 +2,8 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "rootDir": "./src",
-    "outDir": "./script",
+    "rootDir": "./",
+    "outDir": "../Script/",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,

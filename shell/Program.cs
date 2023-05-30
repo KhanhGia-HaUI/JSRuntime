@@ -4,17 +4,18 @@
     {
         public static void Main(string[] args)
         {
+            var SystemConsole = new Runtime.Modules.Standards.SystemImplement();
             try
             {
                 Runtime.Modules.JavaScript.Engine.Evaluate($"{Runtime.Modules.Standards.Platform.CurrentDirectoryContainsShell}/Script", args);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                SystemConsole.Print(ex.ToString());
             }
             finally
             {
-                Console.ReadKey();
+                SystemConsole.TerminateProgram();
             }
         }
     }

@@ -26,7 +26,7 @@
             {
                 try
                 {
-                    var k_module = fs.ReadText(Script, "UTF8");
+                    var k_module = fs.ReadText(Script, Standards.IOModule.EncodingType.UTF8);
                     engine.Execute(k_module);
                 }
                 catch (Exception ex)
@@ -37,7 +37,7 @@
 
             try
             {
-                engine.Execute(fs.ReadText(main_js));
+                engine.Execute(fs.ReadText(main_js, Standards.IOModule.EncodingType.UTF8));
             }
             catch (Exception ex)
             {

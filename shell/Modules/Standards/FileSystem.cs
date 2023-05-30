@@ -55,10 +55,6 @@ namespace Runtime.Modules.Standards.IOModule
 
     public class FileSystem : File_System_Abstract
     {
-        private readonly JsonSerializerOptions ConstraintJsonSerializerOptions = new () { 
-            WriteIndented = true,
-            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-        };
 
         public FileSystem() { }
 
@@ -158,11 +154,10 @@ namespace Runtime.Modules.Standards.IOModule
         public override bool FileExists(string file_path) => File.Exists(file_path);
 
 
-        #pragma warning disable CS8603
-
         public override Generic_T ReadJson<Generic_T>(string filepath) where Generic_T : class
         {
-            return JsonSerializer.Deserialize<Generic_T>(this.ReadText(filepath, EncodingType.UTF8));
+            var json_library = new Runtime.Modules.Standards.JsonImplement();
+            return json_library.ParseJson<Generic_T>(this.ReadText(filepath, EncodingType.UTF8));
         }
 
         public override async Task<Generic_T> ReadJsonAsync<Generic_T>(string filepath) where Generic_T : class
@@ -197,7 +192,8 @@ namespace Runtime.Modules.Standards.IOModule
 
         public override void WriteJson<Generic_T>(string output_path, Generic_T json_object) where Generic_T : class
         {
-            var serialize_json = JsonSerializer.Serialize<Generic_T>(json_object, this.ConstraintJsonSerializerOptions);
+            var json_library = new JsonImplement();
+            var serialize_json = json_library.StringifyJson<Generic_T>(json_object, null);
             this.WriteText(output_path, serialize_json, EncodingType.UTF8);
             return;
         }
@@ -414,7 +410,8 @@ namespace Runtime.Modules.Standards.IOModule
 
         public override string ToString()
         {
-            return JsonSerializer.Serialize<FormatRecords>(this);
+            var json_library = new JsonImplement();
+            return json_library.StringifyJson<FormatRecords>(this, null);
         }
 
     }

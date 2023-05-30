@@ -309,18 +309,20 @@ namespace Runtime.Modules.Standards.Bitmap
 
         public override void ConvertPngToJpeg(string pngImagePath, string jpegImagePath)
         {
-            using (Image<Rgba32> image = Image.Load<Rgba32>(pngImagePath))
+            using Image<Rgba32> image = Image.Load<Rgba32>(pngImagePath);
             {
                 image.Save(jpegImagePath, new JpegEncoder());
             }
+            return;
         }
 
         public override void ConvertJpegToPng(string jpegImagePath, string pngImagePath)
         {
-            using (Image<Rgba32> image = Image.Load<Rgba32>(jpegImagePath))
+            using Image<Rgba32> image = Image.Load<Rgba32>(jpegImagePath);
             {
                 image.Save(pngImagePath, new PngEncoder());
             }
+            return;
         }
 
 
@@ -328,7 +330,7 @@ namespace Runtime.Modules.Standards.Bitmap
         {
              var fs = new Runtime.Modules.Standards.IOModule.FileSystem();
              var path = new Runtime.Modules.Standards.IOModule.Implement_Path();
-             using (Image<Rgba32> gifImage = Image.Load<Rgba32>(gifImagePath))
+             using Image<Rgba32> gifImage = Image.Load<Rgba32>(gifImagePath);
              {
                 if(!fs.DirectoryExists(outputDirectory))
                 {

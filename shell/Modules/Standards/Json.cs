@@ -6,9 +6,9 @@ namespace Runtime.Modules.Standards
 
     public abstract class Json_Abstract
     {
-        public abstract Generic_T ParseJson<Generic_T>(string text_json) where Generic_T : class;
+        public abstract Generic_T ParseJson<Generic_T>(string text_json);
 
-        public abstract string StringifyJson<Generic_T>(Generic_T json_serialized, JsonSerializerOptions? SerializerOptions) where Generic_T : class;
+        public abstract string StringifyJson<Generic_T>(Generic_T json_serialized, JsonSerializerOptions? SerializerOptions);
 
     }
 
@@ -33,14 +33,14 @@ namespace Runtime.Modules.Standards
 
         public JsonImplement() { }
 
-        public override Generic_T ParseJson<Generic_T>(string text_json) where Generic_T : class
+        public override Generic_T ParseJson<Generic_T>(string text_json)
         {
             #pragma warning disable CS8603
             return JsonSerializer.Deserialize<Generic_T>(text_json);
         }
 
 
-        public override string StringifyJson<Generic_T>(Generic_T json_serialized, JsonSerializerOptions? SerializerOptions) where Generic_T : class
+        public override string StringifyJson<Generic_T>(Generic_T json_serialized, JsonSerializerOptions? SerializerOptions)
         {
             SerializerOptions ??= this.ConstraintJsonSerializerOptions;
             return JsonSerializer.Serialize<Generic_T>(json_serialized, SerializerOptions);

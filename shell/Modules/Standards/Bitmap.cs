@@ -84,7 +84,7 @@ namespace Runtime.Modules.Standards.Bitmap
 
         public abstract Image<Argb32> CreateArgbImage(byte[] alphaBuffer, byte[] redBuffer, byte[] greenBuffer, byte[] blueBuffer, int width, int height);
 
-        public abstract Image<Rgba32> RotateImage(string imagePath, string outputPath, float degrees);
+        public abstract void RotateImage(string imagePath, string outputPath, float degrees);
 
         public abstract void ConvertPngToJpeg(string pngImagePath, string jpegImagePath);
 
@@ -289,13 +289,13 @@ namespace Runtime.Modules.Standards.Bitmap
             return;
         }
 
-        public override Image<Rgba32> RotateImage(string imagePath, string outputPath, float degrees)
+        public override void RotateImage(string imagePath, string outputPath, float degrees)
         {
-            using (Image<Rgba32> image = Image.Load<Rgba32>(imagePath))
+            using Image<Rgba32> image = Image.Load<Rgba32>(imagePath);
             {
                 Image<Rgba32> rotatedImage = image.Clone(x => x.Rotate(degrees));
                 rotatedImage.Save(outputPath);
-                return rotatedImage;
+                return;
             }
         }
 

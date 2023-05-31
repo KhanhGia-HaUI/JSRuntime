@@ -1,12 +1,10 @@
 namespace Runtime.Script {
     export async function Main(argument: string[]): Promise<void> {
         try {
-            const dimension = DotNetBitmap.GetDimension<int>("./src/R.png");
-            Console.Print(dimension.file_path);
-        } catch (error) {
+            const max_rects_bin = new Runtime.Script.Modules.Third.JavaScript.MaxRectsPacker.MaxRectsPacker();
+        } catch (error: any) {
             Console.Print(error);
         }
-        Console.Input();
     }
 }
 

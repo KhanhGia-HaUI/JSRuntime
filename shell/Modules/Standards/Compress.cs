@@ -36,6 +36,7 @@ namespace Runtime.Modules.Standards
         BestSpeed,
     }
 
+
     public class Compress : Abstract_Compress
     {
 

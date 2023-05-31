@@ -10,13 +10,18 @@
             var fs = new Runtime.Modules.Standards.IOModule.FileSystem();
             var main_js = $"{Script_Directory}/main.js";
             var SystemConsole = new Runtime.Modules.Standards.SystemImplement();
-            var system_engine_type_checker = new Runtime.Modules.Standards.TypeChecker();
             var engine = new Jint.Engine();
 
             var Scripts = new string[] {
-                $"{Script_Directory}/modules/constraints/compression.js",
-                $"{Script_Directory}/modules/constraints/crypto.js",
-                $"{Script_Directory}/modules/constraints/filesystem.js",
+                path.Resolve($"{Script_Directory}/modules/constraints/compression.js"),
+                path.Resolve($"{Script_Directory}/modules/constraints/crypto.js"),
+                path.Resolve($"{Script_Directory}/modules/constraints/filesystem.js"),
+                path.Resolve($"{Script_Directory}/modules/system/default/timer.js"),
+                path.Resolve($"{Script_Directory}/modules/system/default/timer.js"),
+                path.Resolve($"{Script_Directory}/modules/system/implement/json.js"),
+                path.Resolve($"{Script_Directory}/modules/system/implement/filesystem.js"),
+                path.Resolve($"{Script_Directory}/modules/system/implement/javascript.js"),
+                path.Resolve($"{Script_Directory}/modules/third/maxrects-packer/maxrects-packer.js"),
 
             };
 
@@ -24,7 +29,7 @@
             engine.SetValue("args", args);
             engine.SetValue("MainScriptDirectory", (Script_Directory));
             engine.SetValue("Console", SystemConsole);
-            engine.SetValue("TypeChecker", system_engine_type_checker);
+            engine.SetValue("TypeChecker", new Runtime.Modules.Standards.TypeChecker());
             engine.SetValue("JavaScriptEngine", engine);
             engine.SetValue("Path", path);
             engine.SetValue("Platform", new Runtime.Modules.Standards.Platform());
@@ -32,6 +37,7 @@
             engine.SetValue("DotNetCrypto", new Runtime.Modules.Standards.ImplementCrypto());
             engine.SetValue("DotNetCompress", new Runtime.Modules.Standards.Compress());
             engine.SetValue("JsonLibrary", new Runtime.Modules.Standards.JsonImplement());
+            engine.SetValue("ScriptModules", Scripts);
 
             foreach (var Script in Scripts)
             {

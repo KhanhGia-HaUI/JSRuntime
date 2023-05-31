@@ -1,4 +1,13 @@
+/**
+ * @param args - Arguments pass from DotNet will be send to Script
+ * @implements Hold arguments and do process with arguments
+ */
+
 declare const args: string[];
+
+/**
+ * @package Platform implementing system for DotNet using JS
+ */
 
 declare namespace Platform {
     /**
@@ -6,6 +15,10 @@ declare namespace Platform {
      */
     export function CurrentPlatform(): "windows" | "linux" | "macintosh" | "unknown" | "ios" | "android";
 }
+
+/**
+ * @package Implementing for Console & MaUI project
+ */
 
 declare namespace Console {
     /**
@@ -28,11 +41,28 @@ declare namespace Console {
     export function TerminateProgram(): void;
 }
 
+/**
+ * @abstract Data type for long number
+ */
+
 declare type unsigned_long_long = number;
+
+/**
+ * @abstract Data type for integer number
+ */
 
 declare type int = number;
 
+/**
+ * @abstract Data type for float number
+ */
+
 declare type float = number;
+
+/**
+ * @packages Implementing File System based on C# & JS
+ * @access Script can have access to File System through Runtime
+ */
 
 declare namespace Fs {
     /**
@@ -104,32 +134,6 @@ declare namespace Fs {
     ): Promise<void>;
     /**
      *
-     * @param file_path - Provide Json File path to read.
-     * @returns Deserialized Json Object.
-     */
-    export function ReadJson<Generic_T>(file_path: string): Generic_T;
-    /**
-     *
-     * @param output_path - Provide Json Output Path.
-     * @param json_object - Provide Json Object to Serialize.
-     * @returns Json Serialized as File.
-     */
-    export function WriteJson<Generic_T>(output_path: string, json_object: Generic_T): void;
-    /**
-     *
-     * @param file_path - Provide Json File path to read.
-     * @returns Deserialized Json Object as Asynchronous function, please provide await from ES6 to handle asynchronous function.
-     */
-    export async function ReadJsonAsync<Generic_T>(file_path: string): Promise<Generic_T>;
-    /**
-     *
-     * @param output_path - Provide Json Output Path.
-     * @param json_object - Provide Json Object to Serialize.
-     * @returns Json Serialized as File, but this function is Asynchronous. You need to provide await from ES6 to handle asynchronous function.
-     */
-    export async function WriteJsonAsync<Generic_T>(output_path: string, json_object: Generic_T): Promise<void>;
-    /**
-     *
      * @param output_path - Output file expected.
      * @param data - Pass data to write in.
      * @returns Writed file.
@@ -179,6 +183,10 @@ declare namespace Type {
     export function GetType(data: any): string;
 }
 
+/**
+ * @package Self implement Records
+ */
+
 declare interface FormatRecords {
     root: string;
     name: string;
@@ -187,12 +195,20 @@ declare interface FormatRecords {
     basename: string;
 }
 
+/**
+ * @package Records for path
+ */
+
 declare interface ParsedPath {
     name: string;
     dir: string;
     ext: string;
     basename: string;
 }
+
+/**
+ * @package Self implementing Path based on NodeJS & C# Path System
+ */
 
 declare namespace Path {
     export function Basename(path: string, ...suffix: string[]): string;
@@ -368,7 +384,25 @@ declare namespace DotNetBitmap {
         output: Runtime.Script.Modules.BitMap.Constraints.ImageInfo<number>,
     ): Image<Rgba32>;
 
+    /**
+     *
+     * @param imagePath - Pass image to save
+     * @param imageByte - Pass Byte image
+     * @returns Images saved
+     */
+
     export function SaveImage(imagePath: string, imageByte: Image<Rgba32>): void;
+
+    /**
+     *
+     * @param alphaBuffer - Pass alpha channel
+     * @param redBuffer  - Pass red channel
+     * @param greenBuffer  - Pass green channel
+     * @param blueBuffer  - Pass blue channel
+     * @param width  - Pass image width
+     * @param height  - Pass image height
+     * @returns Rgba Image as Buffer
+     */
 
     export function CreateRgbaImage(
         alphaBuffer: Uint8Array,
@@ -379,6 +413,17 @@ declare namespace DotNetBitmap {
         height: number,
     ): Image<Rgba32>;
 
+    /**
+     *
+     * @param alphaBuffer - Pass alpha channel
+     * @param redBuffer  - Pass red channel
+     * @param greenBuffer  - Pass green channel
+     * @param blueBuffer  - Pass blue channel
+     * @param width  - Pass image width
+     * @param height  - Pass image height
+     * @returns Argb Image as Buffer
+     */
+
     export function CreateArgbImage(
         alphaBuffer: Uint8Array,
         redBuffer: Uint8Array,
@@ -388,13 +433,50 @@ declare namespace DotNetBitmap {
         height: number,
     ): Image<Argb32>;
 
-    export function RotateImage(imagePath: string, outputPath: string, degrees: number): Image<Rgba32>;
+    /**
+     *
+     * @param imagePath - Provide image path
+     * @param outputPath - Provide output image path
+     * @param degrees
+     */
+
+    export function RotateImage(imagePath: string, outputPath: string, degrees: number): void;
+
+    /**
+     *
+     * @param pngImagePath - Provide png in path
+     * @param jpegImagePath - Provide Jpeg out path
+     * @returns PNG TO JPEG
+     */
 
     export function ConvertPngToJpeg(pngImagePath: string, jpegImagePath: string): void;
 
+    /**
+     *
+     * @param pngImagePath - Provide png out path
+     * @param jpegImagePath - Provide Jpeg in path
+     * @returns   JPEG TO PNG
+     */
+
     export function ConvertJpegToPng(jpegImagePath: string, pngImagePath: string): void;
 
+    /**
+     *
+     * @param gifImagePath - Input gif path
+     * @param outputDirectory - Output directory contains images
+     * @param frameName - name for frames
+     * @returns All gif frames exported to PNGs
+     */
+
     export function ExportGifToPngs(gifImagePath: string, outputDirectory: string, frameName: string): void;
+
+    /**
+     *
+     * @param imagePath - Provide image path
+     * @param imageByte - Provide image buffer
+     * @async Requires to handle asynchronous function
+     * @returns Asynchrnous write image
+     */
 
     export async function SaveImageAsync(imagePath: string, imageByte: Image<Rgba32>): Promise<void>;
 }
@@ -489,6 +571,11 @@ namespace DotNetCrypto {
     ): Uint8Array;
 }
 
+/**
+ * @package Self implement compression based on DotNetZip
+ * @requires https://www.nuget.org/packages/DotNetZip/
+ */
+
 declare namespace DotNetCompress {
     /**
      *
@@ -508,13 +595,66 @@ declare namespace DotNetCompress {
 
     export async function CompressZipAsync(zip_output: string, files?: string[], directories?: string[]): Promise<void>;
 
+    /**
+     *
+     * @param zip_input - Zip path
+     * @param extracted_directory - Extracted directory expected
+     * @returns Extracted zip
+     */
+
     export function UncompressZip(zip_input: string, extracted_directory: string): void;
+
+    /**
+     *
+     * @param zip_input - Zip path
+     * @param extracted_directory - Extracted directory expected
+     * @returns Extracted zip as asynchronous function, please use ES6 Async/Await to make it synchronous
+     */
 
     export async function UncompressZipAsync(zip_input: string, extracted_directory: string): Promise<void>;
 
-    export function CompressZlibBytes<Generic_T>(data: Generic_T, compression_level: ZlibCompressionLevel): Uint8Array;
+    /**
+     *
+     * @param data - Pass data to do compression
+     * @param compression_level - Pass Zlib Level
+     * @returns Zlib out
+     */
+
+    export function CompressZlibBytes<Generic_T, Generic_U>(
+        data: Generic_T,
+        compression_level: Runtime.Script.Modules.Compression.Constraints.ZlibLevel,
+    ): Generic_U;
+
+    /**
+     *
+     * @param zlibData - Pass data to do uncompression
+     * @returns Uncompressed Zlib out
+     */
 
     export function UncompressZlibBytes<Generic_T, Generic_U>(zlibData: Generic_T): Generic_U;
 }
 
+/**
+ * @returns Current place contains Script directory
+ */
 declare const MainScriptDirectory: string;
+
+/**
+ * @returns All scripts loaded by the Runtime program
+ */
+
+declare const ScriptModules: Array<string>;
+
+/**
+ * @package Dependencies Jint from DotNet
+ * @requires https://github.com/sebastienros/jint
+ */
+
+declare namespace JavaScriptEngine {
+    /**
+     *
+     * @param js_string_to_evaluate - Pass JS to Evaluate as string
+     * @returns Finished evaluate, can be undefined
+     */
+    export function Evaluate(js_string_to_evaluate: string): void;
+}

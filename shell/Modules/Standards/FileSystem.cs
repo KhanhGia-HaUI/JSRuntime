@@ -29,13 +29,13 @@ namespace Runtime.Modules.Standards.IOModule
 
         public abstract Task WriteTextAsync(string filepath, string data, EncodingType encoding);
 
-        public abstract Generic_T ReadJson<Generic_T>(string filepath) where Generic_T : class;
+        public abstract Generic_T ReadJson<Generic_T>(string filepath);
 
-        public abstract void WriteJson<Generic_T>(string output_path, Generic_T json_object) where Generic_T : class;
+        public abstract void WriteJson<Generic_T>(string output_path, Generic_T json_object);
 
-        public abstract Task<Generic_T> ReadJsonAsync<Generic_T>(string filepath) where Generic_T : class;
+        public abstract Task<Generic_T> ReadJsonAsync<Generic_T>(string filepath);
 
-        public abstract Task WriteJsonAsync<Generic_T>(string output_path, Generic_T json_object) where Generic_T : class;
+        public abstract Task WriteJsonAsync<Generic_T>(string output_path, Generic_T json_object);
 
         public abstract void OutFile<Generic_T>(string output_path, Generic_T data);
 
@@ -144,6 +144,7 @@ namespace Runtime.Modules.Standards.IOModule
         {
             if(directories == null)
             {
+                #pragma warning disable CA2208
                 throw new ArgumentNullException($"directories must not be null");
             }
             foreach(var directory in directories)
@@ -161,13 +162,13 @@ namespace Runtime.Modules.Standards.IOModule
         public override bool FileExists(string file_path) => File.Exists(file_path);
 
 
-        public override Generic_T ReadJson<Generic_T>(string filepath) where Generic_T : class
+        public override Generic_T ReadJson<Generic_T>(string filepath)
         {
             var json_library = new Runtime.Modules.Standards.JsonImplement();
             return json_library.ParseJson<Generic_T>(this.ReadText(filepath, EncodingType.UTF8));
         }
 
-        public override async Task<Generic_T> ReadJsonAsync<Generic_T>(string filepath) where Generic_T : class
+        public override async Task<Generic_T> ReadJsonAsync<Generic_T>(string filepath)
         {
             Generic_T json_object = await Task.Run(()=>this.ReadJson<Generic_T>(filepath));
             return json_object;
@@ -197,7 +198,7 @@ namespace Runtime.Modules.Standards.IOModule
             };
         }
 
-        public override void WriteJson<Generic_T>(string output_path, Generic_T json_object) where Generic_T : class
+        public override void WriteJson<Generic_T>(string output_path, Generic_T json_object)
         {
             var json_library = new JsonImplement();
             var serialize_json = json_library.StringifyJson<Generic_T>(json_object, null);
@@ -205,7 +206,7 @@ namespace Runtime.Modules.Standards.IOModule
             return;
         }
 
-        public override async Task WriteJsonAsync<Generic_T>(string output_path, Generic_T json_object) where Generic_T : class
+        public override async Task WriteJsonAsync<Generic_T>(string output_path, Generic_T json_object)
         {
             await Task.Run(()=>this.WriteJson<Generic_T>(output_path, json_object));
             return;

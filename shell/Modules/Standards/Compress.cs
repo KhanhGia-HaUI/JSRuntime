@@ -6,9 +6,9 @@ namespace Runtime.Modules.Standards
 
     public abstract class Abstract_Compress
     {
-        public abstract byte[] CompressZip<Generic_T>(string zip_output, Generic_T? files, Generic_T? directories) where Generic_T : IList<string>;
+        public abstract void CompressZip(string zip_output, string[] files, string[] directories);
 
-        public abstract Task<byte[]> CompressZipAsync<Generic_T>(string zip_output, Generic_T? files, Generic_T? directories) where Generic_T : IList<string>;
+        public abstract Task CompressZipAsync(string zip_output, string[] files, string[] directories);
 
         public abstract void UncompressZip(string zip_input, string extracted_directory);
 
@@ -40,10 +40,9 @@ namespace Runtime.Modules.Standards
     {
 
 
-        public override byte[] CompressZip<Generic_T>(string zip_output, Generic_T? files, Generic_T? directories) where Generic_T : default
+        public override void CompressZip(string zip_output, string[] files, string[] directories)
         {
-            using var memoryStream = new MemoryStream();
-            using (var zip = new ZipFile())
+            using var zip = new ZipFile();
             {
                 if (files != null)
                 {
@@ -61,16 +60,15 @@ namespace Runtime.Modules.Standards
                     }
                 }
 
-                zip.Save(memoryStream);
+                zip.Save(zip_output);
             }
 
-            return memoryStream.ToArray();
+            return;
         }
 
 
-        public override async Task<byte[]> CompressZipAsync<Generic_T>(string zipOutput, Generic_T? files, Generic_T? directories) where Generic_T : default
+        public override async Task CompressZipAsync(string zipOutput, string[] files, string[] directories)
         {
-            using var memoryStream = new MemoryStream();
             await Task.Run(() =>
             {
                 using var zip = new ZipFile();
@@ -90,9 +88,9 @@ namespace Runtime.Modules.Standards
                     }
                 }
 
-                zip.Save(memoryStream);
+                zip.Save(zipOutput);
             });
-            return memoryStream.ToArray();
+            return;
         }
         
 

@@ -1,6 +1,11 @@
-declare namespace Runtime {}
-
 declare const args: string[];
+
+declare namespace Platform {
+    /**
+     * @returns The platform that the user is using right now
+     */
+    export function CurrentPlatform(): "windows" | "linux" | "macintosh" | "unknown" | "ios" | "android";
+}
 
 declare namespace Console {
     /**
@@ -15,6 +20,12 @@ declare namespace Console {
      */
 
     export function Input(): string;
+
+    /**
+     * @param - Console.ReadKey()
+     */
+
+    export function TerminateProgram(): void;
 }
 
 declare type unsigned_long_long = number;
@@ -53,10 +64,10 @@ declare namespace Fs {
     export function CreateDirectory(directory_path: string): void;
     /**
      *
-     * @param directory_path - Provide directory path to delete.
+     * @param directory_path - Provide directories path to delete. should pass array
      * @returns Deleted Directory.
      */
-    export function DeleteDirectory(directory_path: string): void;
+    export function DeleteDirectory(directories: Array<string>): void;
     /**
      *
      * @param file_path - Provide directory to read.
@@ -289,3 +300,221 @@ declare namespace Path {
 
     export function GetDirectoryName(path: string): string;
 }
+
+declare type Image<Argb32> = Uint8Array;
+
+declare namespace DotNetBitmap {
+    /**
+     *
+     * @param imagePath - Provide image path
+     * @returns width & height of the provided image
+     */
+
+    export function GetDimension<Generic_T>(
+        imagePath: string,
+    ): Runtime.Script.Modules.BitMap.Constraints.ImageInfo<Generic_T>;
+
+    /**
+     *
+     * @param imagePath - Provide image path
+     * @returns alpha channel
+     */
+
+    export function ExtractAlphaChannel(imagePath: string): Uint8Array;
+
+    /**
+     *
+     * @param imagePath - Provide image path
+     * @returns red channel
+     */
+
+    export function ExtractRedChannel(imagePath: string): Uint8Array;
+
+    /**
+     *
+     * @param imagePath - Provide image path
+     * @returns green channel
+     */
+
+    export function ExtractGreenChannel(imagePath: string): Uint8Array;
+
+    /**
+     *
+     * @param imagePath - Provide image path
+     * @returns blue channel
+     */
+
+    export function ExtractBlueChannel(imagePath: string): Uint8Array;
+
+    /**
+     *
+     * @param images - Provide image<RGBA32> Array
+     * @param width - Provide expected output width
+     * @param height - Provide expected output height
+     * @returns New Image as Buffer
+     */
+
+    export function JoinImages(images: Image<Rgba32>[], width: number, height: number): Image<Rgba32>;
+
+    /**
+     *
+     * @param original - Pass original ImageInfo
+     * @param output - Pass modified (expected) ImageInfo
+     * @returns Modified
+     */
+
+    export function ResizeImage(
+        original: Runtime.Script.Modules.BitMap.Constraints.ImageInfo<number>,
+        output: Runtime.Script.Modules.BitMap.Constraints.ImageInfo<number>,
+    ): Image<Rgba32>;
+
+    export function SaveImage(imagePath: string, imageByte: Image<Rgba32>): void;
+
+    export function CreateRgbaImage(
+        alphaBuffer: Uint8Array,
+        redBuffer: Uint8Array,
+        greenBuffer: Uint8Array,
+        blueBuffer: Uint8Array,
+        width: number,
+        height: number,
+    ): Image<Rgba32>;
+
+    export function CreateArgbImage(
+        alphaBuffer: Uint8Array,
+        redBuffer: Uint8Array,
+        greenBuffer: Uint8Array,
+        blueBuffer: Uint8Array,
+        width: number,
+        height: number,
+    ): Image<Argb32>;
+
+    export function RotateImage(imagePath: string, outputPath: string, degrees: number): Image<Rgba32>;
+
+    export function ConvertPngToJpeg(pngImagePath: string, jpegImagePath: string): void;
+
+    export function ConvertJpegToPng(jpegImagePath: string, pngImagePath: string): void;
+
+    export function ExportGifToPngs(gifImagePath: string, outputDirectory: string, frameName: string): void;
+
+    export async function SaveImageAsync(imagePath: string, imageByte: Image<Rgba32>): Promise<void>;
+}
+
+declare namespace JsonLibrary {
+    export function ParseJson<Generic_T extends object>(textJson: string): Generic_T;
+
+    export function StringifyJson<Generic_T extends object>(
+        jsonSerialized: Generic_T,
+        serializerOptions: JsonSerializerOptions | null,
+    ): string;
+}
+
+interface JsonSerializerOptions {
+    allowTrailingCommas?: boolean;
+    defaultBufferSize?: number;
+    dictionaryKeyPolicy?: PropertyNamingPolicy;
+    ignoreNullValues?: boolean;
+    ignoreReadOnlyProperties?: boolean;
+    maxDepth?: number;
+    propertyNamingPolicy?: PropertyNamingPolicy;
+    propertyNameCaseInsensitive?: boolean;
+    propertyNameTransform?: (name: string) => string;
+    readCommentHandling?: Runtime.Script.Modules.JsonLibrary.Constraints.CommentHandling;
+    writeIndented?: boolean;
+    encoder?: TextEncoder;
+    decoder?: TextDecoder;
+}
+
+interface PropertyNamingPolicy {
+    convertName(name: string): string;
+}
+
+interface TextDecoder {
+    decode(input?: ArrayBufferView | ArrayBuffer, options?: TextDecodeOptions): string;
+}
+
+interface TextEncoder {
+    encode(input?: string, options?: TextEncodeOptions): Uint8Array;
+}
+
+namespace DotNetCrypto {
+    /**
+     *
+     * @param data - Provide data to hash as string
+     * @returns Hashed data
+     */
+    export function ComputeMD5Hash(data: string): string;
+
+    /**
+     *
+     * @param data - Provide data to hash as string
+     * @returns Hashed data
+     */
+    export function ComputeSha1Hash(data: string): string;
+
+    /**
+     *
+     * @param data - Provide data to hash as string
+     * @returns Hashed data
+     */
+    export function ComputeSha256Hash(data: string): string;
+
+    /**
+     *
+     * @param data - Provide data to hash as string
+     * @returns Hashed data
+     */
+    export function ComputeSha384Hash(data: string): string;
+
+    /**
+     *
+     * @param data - Provide data to hash as string
+     * @returns Hashed data
+     */
+    export function ComputeSha512Hash(data: string): string;
+
+    export function RijndaelEncrypt(
+        plainText: string,
+        password: string,
+        saltValue: string,
+        rijndaelMode: Runtime.Script.Modules.Crypto.Constraints.RijndaelMode,
+        rijndaelPadding: Runtime.Script.Modules.Crypto.Constraints.RijndaelPadding,
+    ): Uint8Array;
+
+    export function RijndaelDecrypt(
+        encryptedBytes: Uint8Array,
+        password: string,
+        saltValue: string,
+        rijndaelMode: Runtime.Script.Modules.Crypto.Constraints.RijndaelMode,
+        rijndaelPadding: Runtime.Script.Modules.Crypto.Constraints.RijndaelPadding,
+    ): Uint8Array;
+}
+
+declare namespace DotNetCompress {
+    /**
+     *
+     * @param zip_output - Created zip output path
+     * @param files - File array, pass an empty array if nothing were added
+     * @param directories - Directory array, pass an empty array if nothing were added
+     * @returns Created zip
+     */
+    export function CompressZip(zip_output: string, files: string[], directories: string[]): void;
+    /**
+     *
+     * @param zip_output - Created zip output path
+     * @param files - File array, pass an empty array if nothing were added
+     * @param directories - Directory array, pass an empty array if nothing were added
+     * @returns Created zip, this function is asynchronous, please provide await from ES6
+     */
+
+    export async function CompressZipAsync(zip_output: string, files?: string[], directories?: string[]): Promise<void>;
+
+    export function UncompressZip(zip_input: string, extracted_directory: string): void;
+
+    export async function UncompressZipAsync(zip_input: string, extracted_directory: string): Promise<void>;
+
+    export function CompressZlibBytes<Generic_T>(data: Generic_T, compression_level: ZlibCompressionLevel): Uint8Array;
+
+    export function UncompressZlibBytes<Generic_T, Generic_U>(zlibData: Generic_T): Generic_U;
+}
+
+declare const MainScriptDirectory: string;

@@ -12,6 +12,17 @@ namespace Runtime.Modules.Standards
 
     }
 
+
+    public abstract class SerializeExtends
+    {
+        public override string ToString()
+        {
+            var JsonImplementTest = new Runtime.Modules.Standards.JsonImplement();
+            return JsonImplementTest.StringifyJson(this, null);
+        }
+    }
+
+
     public class JsonImplement : Json_Abstract
     {
         private readonly JsonSerializerOptions ConstraintJsonSerializerOptions = new()

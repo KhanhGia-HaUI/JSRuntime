@@ -7,15 +7,15 @@ namespace Runtime.Modules.Standards
 
     public abstract class Crypto_Abstract
     {
-        public abstract string ComputeMD5Hash<Generic_T>(Generic_T data) where Generic_T : IEnumerable<byte>;
+        public abstract string ComputeMD5Hash(string data);
 
-        public abstract string ComputeSha1Hash<Generic_T>(Generic_T data) where Generic_T : IEnumerable<byte>;
+        public abstract string ComputeSha1Hash(string data);
 
-        public abstract string ComputeSha256Hash<Generic_T>(Generic_T data) where Generic_T : IEnumerable<byte>;
+        public abstract string ComputeSha256Hash(string data);
 
-        public abstract string ComputeSha384Hash<Generic_T>(Generic_T data) where Generic_T : IEnumerable<byte>;
+        public abstract string ComputeSha384Hash(string data);
 
-        public abstract string ComputeSha512Hash<Generic_T>(Generic_T data) where Generic_T : IEnumerable<byte>;
+        public abstract string ComputeSha512Hash(string data);
 
         public abstract byte[] RijndaelEncrypt(string plainText, string password, string salt_value, RijndaelMode Rijndael_Mode, RijndaelPadding Rijndael_Padding);
 
@@ -45,136 +45,70 @@ namespace Runtime.Modules.Standards
         public ImplementCrypto() { }
 
 
-        public override string ComputeMD5Hash<Generic_T>(Generic_T data) where Generic_T : default
+        public override string ComputeMD5Hash(string data)
         {
             {
-                if (data == null)
                 {
-                    throw new ArgumentNullException(nameof(data));
+                    byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(data);
+                    byte[] hashBytes = System.Security.Cryptography.MD5.HashData(inputBytes);
+                    var sb = new StringBuilder();
+                    for (var i = 0; i < hashBytes.Length; i++)
+                    {
+                        sb.Append(hashBytes[i].ToString("X2"));
+                    }
+                    return sb.ToString().ToLower();
                 }
+            }
+        }
 
-                byte[] hashBytes = MD5.HashData(data.ToArray());
+        public override string ComputeSha1Hash(string data)
+        {
+            {
+                byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(data);
+                byte[] hashBytes = System.Security.Cryptography.SHA1.HashData(inputBytes);
                 var sb = new StringBuilder();
-
                 for (var i = 0; i < hashBytes.Length; i++)
                 {
-                    sb.Append(hashBytes[i].ToString("x2"));
+                    sb.Append(hashBytes[i].ToString("X2"));
                 }
-
-                return sb.ToString();
+                return sb.ToString().ToLower();
             }
         }
 
-        public override string ComputeSha1Hash<Generic_T>(Generic_T data) where Generic_T : default
+        public override string ComputeSha256Hash(string data)
         {
-            if (data == null)
+            byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(data);
+            byte[] hashBytes = System.Security.Cryptography.SHA256.HashData(inputBytes);
+            var sb = new StringBuilder();
+            for (var i = 0; i < hashBytes.Length; i++)
             {
-                throw new ArgumentNullException(nameof(data));
+                sb.Append(hashBytes[i].ToString("X2"));
             }
-
-            byte[] dataBytes;
-
-            if (data is string)
-            {
-                #pragma warning disable CS8604
-                dataBytes = Encoding.UTF8.GetBytes(data as string);
-            }
-            else if (data is byte[] byteArray)
-            {
-                dataBytes = byteArray;
-            }
-            else
-            {
-                throw new ArgumentException($"Invalid data type. Expecting string or byte array.");
-            }
-            {
-                byte[] hashBytes = SHA1.HashData(dataBytes);
-                return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
-            }
+            return sb.ToString().ToLower();
         }
 
-        public override string ComputeSha256Hash<Generic_T>(Generic_T data) where Generic_T : default
+        public override string ComputeSha384Hash(string data)
         {
-            if (data == null)
+            byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(data);
+            byte[] hashBytes = System.Security.Cryptography.SHA384.HashData(inputBytes);
+            var sb = new StringBuilder();
+            for (var i = 0; i < hashBytes.Length; i++)
             {
-                throw new ArgumentNullException(nameof(data));
+                sb.Append(hashBytes[i].ToString("X2"));
             }
-
-            byte[] dataBytes;
-
-            if (data is string)
-            {
-                #pragma warning disable CS8604
-                dataBytes = Encoding.UTF8.GetBytes(data as string);
-            }
-            else if (data is byte[] byteArray)
-            {
-                dataBytes = byteArray;
-            }
-            else
-            {
-                throw new ArgumentException($"Invalid data type. Expecting string or byte array.");
-            }
-            {
-                byte[] hashBytes = SHA256.HashData(dataBytes);
-                return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
-            }
+            return sb.ToString().ToLower();
         }
 
-        public override string ComputeSha384Hash<Generic_T>(Generic_T data) where Generic_T : default
+        public override string ComputeSha512Hash(string data)
         {
-            if (data == null)
+            byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(data);
+            byte[] hashBytes = System.Security.Cryptography.SHA384.HashData(inputBytes);
+            var sb = new StringBuilder();
+            for (var i = 0; i < hashBytes.Length; i++)
             {
-                throw new ArgumentNullException(nameof(data));
+                sb.Append(hashBytes[i].ToString("X2"));
             }
-
-            byte[] dataBytes;
-
-            if (data is string)
-            {
-                #pragma warning disable CS8604
-                dataBytes = Encoding.UTF8.GetBytes(data as string);
-            }
-            else if (data is byte[] byteArray)
-            {
-                dataBytes = byteArray;
-            }
-            else
-            {
-                throw new ArgumentException($"Invalid data type. Expecting string or byte array.");
-            }
-            {
-                byte[] hashBytes = SHA384.HashData(dataBytes);
-                return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
-            }
-        }
-
-        public override string ComputeSha512Hash<Generic_T>(Generic_T data) where Generic_T : default
-        {
-            if (data == null)
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
-
-            byte[] dataBytes;
-
-            if (data is string)
-            {
-                #pragma warning disable CS8604
-                dataBytes = Encoding.UTF8.GetBytes(data as string);
-            }
-            else if (data is byte[] byteArray)
-            {
-                dataBytes = byteArray;
-            }
-            else
-            {
-                throw new ArgumentException($"Invalid data type. Expecting string or byte array.");
-            }
-            {
-                byte[] hashBytes = SHA512.HashData(dataBytes);
-                return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
-            }
+            return sb.ToString().ToLower();
         }
 
         public override byte[] RijndaelEncrypt(string plainText, string password, string salt_value, RijndaelMode Rijndael_Mode, RijndaelPadding Rijndael_Padding)
@@ -248,7 +182,7 @@ namespace Runtime.Modules.Standards
                     _ => throw new InvalidOperationException($"Rijndael Padding has not been impleemented"),
                 };
 
-                byte[] salt = Encoding.UTF8.GetBytes("YourSaltValue");
+                byte[] salt = Encoding.UTF8.GetBytes(salt_value);
                 byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
 
                 #pragma warning disable SYSLIB0041

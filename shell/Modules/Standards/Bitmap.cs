@@ -63,7 +63,7 @@ namespace Runtime.Modules.Standards.Bitmap
 
     public abstract class Abstract_Bitmap
     {
-        public abstract Dimension<int> GetDimension(string imagePath);
+        public abstract ImageInfo<int> GetDimension(string imagePath);
 
         public abstract byte[] ExtractAlphaChannel(string image_path);
 
@@ -97,15 +97,10 @@ namespace Runtime.Modules.Standards.Bitmap
 
     public class Bitmap_Implement : Abstract_Bitmap
     {
-        public override Dimension<int> GetDimension(string imagePath)
+        public override ImageInfo<int> GetDimension(string imagePath)
         {
-            using Image<Rgba32> image = Image.Load<Rgba32>(imagePath);
-            return new Dimension<int>(
-                image.Width,
-                image.Height
-                )
-            {
-            };
+            using var image = Image.Load<Rgba32>(imagePath);
+            return new ImageInfo<int>(image.Width, image.Height, imagePath);
         }
 
         public override byte[] ExtractAlphaChannel(string image_path)
@@ -185,9 +180,8 @@ namespace Runtime.Modules.Standards.Bitmap
 
         public override byte[] ExtractRedChannel(string image_path)
         {
-            #pragma warning disable IDE0063
 
-            using (Image<Rgba32> image = Image.Load<Rgba32>(image_path))
+            using var image = Image.Load<Rgba32>(image_path);
             {
                 byte[] redBuffer = new byte[image.Width * image.Height];
 
@@ -208,9 +202,8 @@ namespace Runtime.Modules.Standards.Bitmap
 
         public override byte[] ExtractGreenChannel(string image_path)
         {
-            #pragma warning disable IDE0063
 
-            using (Image<Rgba32> image = Image.Load<Rgba32>(image_path))
+            using var image = Image.Load<Rgba32>(image_path);
             {
                 byte[] greenBuffer = new byte[image.Width * image.Height];
 
@@ -231,9 +224,8 @@ namespace Runtime.Modules.Standards.Bitmap
 
         public override byte[] ExtractBlueChannel(string image_path)
         {
-            #pragma warning disable IDE0063
 
-            using (Image<Rgba32> image = Image.Load<Rgba32>(image_path))
+            using var image = Image.Load<Rgba32>(image_path);
             {
                 byte[] blueBuffer = new byte[image.Width * image.Height];
 
@@ -318,7 +310,7 @@ namespace Runtime.Modules.Standards.Bitmap
 
         public override void ConvertJpegToPng(string jpegImagePath, string pngImagePath)
         {
-            using Image<Rgba32> image = Image.Load<Rgba32>(jpegImagePath);
+            using var image = Image.Load<Rgba32>(jpegImagePath);
             {
                 image.Save(pngImagePath, new PngEncoder());
             }
@@ -330,7 +322,7 @@ namespace Runtime.Modules.Standards.Bitmap
         {
              var fs = new Runtime.Modules.Standards.IOModule.FileSystem();
              var path = new Runtime.Modules.Standards.IOModule.Implement_Path();
-             using Image<Rgba32> gifImage = Image.Load<Rgba32>(gifImagePath);
+             using var gifImage = Image.Load<Rgba32>(gifImagePath);
              {
                 if(!fs.DirectoryExists(outputDirectory))
                 {
@@ -339,7 +331,7 @@ namespace Runtime.Modules.Standards.Bitmap
 
                 for (var frameIndex = 0; frameIndex < gifImage.Frames.Count; frameIndex++)
                 {
-                    using (Image<Rgba32> frameImage = gifImage.Clone())
+                    using var frameImage = gifImage.Clone();
                     {
                         frameImage.Frames.RemoveFrame(frameIndex);
                         var outputPath = path.Join(outputDirectory, $"{frame_name}_{frameIndex}.png");
@@ -353,7 +345,7 @@ namespace Runtime.Modules.Standards.Bitmap
 
         public override Task SaveImageAsync(string outputPath, Image<Rgba32> image)
         {
-            using (FileStream outputStream = File.OpenWrite(outputPath))
+            using var outputStream = File.OpenWrite(outputPath);
             {
                 this.SaveImage(outputPath, image);
             }

@@ -19,7 +19,7 @@ namespace Runtime.Modules.Standards.IOModule
 
         public abstract void CreateDirectory(string file_path);
 
-        public abstract void DeleteDirectory(string file_path);
+        public abstract void DeleteDirectory(string[] file_path);
 
         public abstract Task<string> ReadTextAsync(string file_path, EncodingType encoding);
 
@@ -140,16 +140,18 @@ namespace Runtime.Modules.Standards.IOModule
             return;
         }
 
-        public override void DeleteDirectory(string file_path)
+        public override void DeleteDirectory(string[] directories)
         {
-            if(file_path == null)
+            if(directories == null)
             {
-                throw new ArgumentNullException(file_path);
+                throw new ArgumentNullException($"directories must not be null");
             }
-            if (Directory.Exists(file_path))
+            foreach(var directory in directories)
             {
-                /// Directory.Delete(string file_path & bool recursion)
-                Directory.Delete(file_path, true);
+                if (Directory.Exists(directory))
+                {
+                    Directory.Delete(directory, true);
+                }
             }
             return;
         }
@@ -291,7 +293,7 @@ namespace Runtime.Modules.Standards.IOModule
         {
             List<string> file_path_collection = output_path.Replace("\\", "/").Split("/").ToList<string>();
             var last_index = file_path_collection.Count - 1;
-            string requirement_file = file_path_collection[last_index];
+            var requirement_file = file_path_collection[last_index];
             file_path_collection.RemoveAt(last_index);
             var path = new Runtime.Modules.Standards.IOModule.Implement_Path();
             var output_directory = "";

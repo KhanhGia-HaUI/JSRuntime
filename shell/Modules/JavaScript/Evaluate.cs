@@ -22,6 +22,7 @@
                 path.Resolve($"{Script_Directory}/modules/system/implement/filesystem.js"),
                 path.Resolve($"{Script_Directory}/modules/system/implement/javascript.js"),
                 path.Resolve($"{Script_Directory}/modules/third/maxrects-packer/maxrects-packer.js"),
+                path.Resolve($"{Script_Directory}/modules/third/cross-path-sort/index.js"),
 
             };
 

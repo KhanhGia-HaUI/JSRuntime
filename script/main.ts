@@ -13,7 +13,8 @@ namespace Runtime.Script {
             Path.Resolve(`${MainScriptDirectory}/modules/third/maxrects-packer/maxrects-packer.js`),
             Path.Resolve(`${MainScriptDirectory}/modules/third/cross-path-sort/index.js`),
             Path.Resolve(`${MainScriptDirectory}/modules/constraints/platform.js`),
-            // Path.Resolve(`${MainScriptDirectory}/modules/system/implement/exception.js`),
+            Path.Resolve(`${MainScriptDirectory}/modules/system/implement/exception.js`),
+            Path.Resolve(`${MainScriptDirectory}/modules/system/default/localization.js`),
         ]),
     ];
 
@@ -27,6 +28,7 @@ namespace Runtime.Script {
         for (const script of scripts) {
             JavaScriptEngine.Execute(
                 Fs.ReadText(script, 0 as Runtime.Script.Modules.FileSystem.Constraints.EncodingType.UTF8),
+                script,
             );
         }
         return;
@@ -38,14 +40,27 @@ namespace Runtime.Script {
      */
 
     export async function Main(argument: string[]): Promise<void> {
+        // Support UTF8 Console
+        DotNetPlatform.SupportUtf8Console();
         const time_start: number = Date.now();
         Runtime.Script.LoadModules(Runtime.Script.ScriptModules);
         const time_end: number = Date.now();
-        Console.Print(Runtime.Script.Modules.Platform.Constraints.ConsoleColor.Green, `Modules has been loaded`);
         Console.Print(
             Runtime.Script.Modules.Platform.Constraints.ConsoleColor.Green,
-            `Time spent: ${Runtime.Script.Modules.System.Default.Timer.CalculateTime(time_start, time_end, 3)}s`,
+            Runtime.Script.Modules.System.Default.Localization.GetString("all_modules_have_been_loaded"),
         );
+        Console.Print(
+            Runtime.Script.Modules.Platform.Constraints.ConsoleColor.Green,
+            Runtime.Script.Modules.System.Default.Localization.GetString("execution_time").replace(
+                /\{\}/g,
+                Runtime.Script.Modules.System.Default.Timer.CalculateTime(time_start, time_end, 3),
+            ),
+        );
+        try {
+            throw new Runtime.Script.Modules.Exceptions.BrokenFile("Not found", "./Script/main.js", "Broken file");
+        } catch (error: any) {
+            Runtime.Script.Modules.Exceptions.PrintError(error);
+        }
     }
 }
 

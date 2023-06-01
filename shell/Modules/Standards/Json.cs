@@ -12,6 +12,39 @@ namespace Runtime.Modules.Standards
 
     }
 
+    public abstract class Localization_Abstract
+    {
+        public abstract string Get(string property, string LanguageDirectory, string Language);
+
+    }
+
+    public class Localization : Localization_Abstract
+    {
+        public Localization() { }
+        public override string Get(string property, string ScriptDirectory, string Language)
+        {
+            var fs = new Runtime.Modules.Standards.IOModule.FileSystem();
+            var path = new Runtime.Modules.Standards.IOModule.Implement_Path();
+            var file_path = path.Resolve($"{ScriptDirectory}/{Language}.json");
+            if (!fs.FileExists(file_path))
+            {
+                return property;
+            }
+            var localeData = JsonDocument.Parse(fs.ReadText(file_path, IOModule.EncodingType.UTF8));
+
+            if (!localeData.RootElement.TryGetProperty(property, out JsonElement value))
+            {
+                return property;
+            }
+            else
+            {
+                #pragma warning disable CS8603
+                return value.GetString();
+            }
+        }
+
+    }
+
 
     public abstract class SerializeExtends
     {

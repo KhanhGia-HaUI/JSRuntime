@@ -9,7 +9,7 @@ declare const args: string[];
  * @package Platform implementing system for DotNet using JS
  */
 
-declare namespace Platform {
+declare namespace DotNetPlatform {
     /**
      * @returns The platform that the user is using right now
      */
@@ -31,6 +31,12 @@ declare namespace Platform {
      */
 
     export function IsColorSupport(): boolean;
+
+    /**
+     * @returns Make the User's terminal support UTF8
+     */
+
+    export function SupportUtf8Console(): void;
 }
 
 /**
@@ -44,6 +50,15 @@ declare namespace Console {
      */
 
     export function Print<T extends any>(
+        color: Runtime.Script.Modules.Platform.Constraints.ConsoleColor | null,
+        ...params: Array<T>
+    ): void;
+    /**
+     *
+     * @param params - Pass any things here and the tool will console out the input value.
+     */
+
+    export function Printf<T extends any>(
         color: Runtime.Script.Modules.Platform.Constraints.ConsoleColor | null,
         ...params: Array<T>
     ): void;
@@ -202,7 +217,6 @@ declare namespace Type {
      */
     export function GetType(data: any): string;
 }
-
 /**
  * @package Self implement Records
  */
@@ -659,13 +673,13 @@ declare namespace JavaScriptEngine {
      * @param js_string_to_evaluate - Pass JS to Evaluate as string
      * @returns Finished evaluate, can be undefined
      */
-    export function Evaluate(js_string_to_evaluate: string): void;
+    export function Evaluate(js_string_to_evaluate: string, source: string): void;
     /**
      *
      * @param js_string_to_execute - Pass JS to Evaluate as string
      * @returns Add engine to the Runtime
      */
-    export function Execute(js_string_to_execute: string): void;
+    export function Execute(js_string_to_execute: string, source: string): void;
     /**
      *
      * @param specifier - Pass specifier
@@ -673,4 +687,15 @@ declare namespace JavaScriptEngine {
      * @returns Added module JS import/export to the Runtime
      */
     export function AddModule(specifier: string, code: string): void;
+}
+
+declare namespace DotNetLocalization {
+    /**
+     *
+     * @param property - Property to get
+     * @param ScriptDirectory - The script directory contains "main.js"
+     * @param Language - Language to get
+     * @returns STRING if exists in Language, else returns property
+     */
+    export function Get(property: string, ScriptDirectory: string, Language: string): string;
 }

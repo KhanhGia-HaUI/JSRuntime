@@ -1,11 +1,57 @@
 ﻿using System.Runtime.InteropServices;
+using System.Text;
+using System;
 
 namespace Runtime.Modules.Standards
 {
 
+    public enum ShellType
+    {
+        Console,
+        GUI,
+    }
+
+    public enum UserPlatform
+    {
+        Windows,
+        Macintosh,
+        Linux,
+        Android,
+        iOS,
+        Unknown,
+    }
+
+    public enum ConsoleColor
+    {
+        Black,
+        Blue,
+        Cyan,
+        DarkBlue,
+        DarkCyan,
+        DarkGray,
+        DarkGreen,
+        DarkMagenta,
+        DarkRed,
+        DarkYellow,
+        Gray,
+        Green,
+        Magenta,
+        Red,
+        White,
+        Yellow
+    }
+
+
+
     public abstract class Platform_Abstract
     {
-        public abstract string ThisPlatform();
+        public abstract UserPlatform ThisPlatform();
+
+        public abstract bool IsUTF8Support();
+
+        public abstract bool IsColorSupport();
+
+        public abstract void SupportUtf8Console();
 
     }
 
@@ -17,23 +63,23 @@ namespace Runtime.Modules.Standards
         /// </summary>
         /// <returns>"windows", "linux", "macintosh", "unknown"</returns>
         /// 
-        public override string ThisPlatform()
+        public override UserPlatform ThisPlatform()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                return "windows";
+                return UserPlatform.Windows;
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                return "linux";
+                return UserPlatform.Linux;
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                return "macintosh";
+                return UserPlatform.Macintosh;
             }
             else
             {
-                return "unknown";
+                return UserPlatform.Unknown;
             }
         }
 
@@ -41,25 +87,81 @@ namespace Runtime.Modules.Standards
 
         public readonly static string CurrentDirectoryContainsShell = Path.GetDirectoryName(Environment.ProcessPath);
 
+        public readonly ShellType RuntimeShell = ShellType.Console;
 
-        public static string CurrentPlatform()
+        public Platform() { }
+
+        public override bool IsUTF8Support()
+        {
+            if(this.RuntimeShell == ShellType.Console)
+            {
+                Encoding utf8 = new UTF8Encoding();
+
+                if (Console.OutputEncoding.Equals(utf8))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+
+        public static UserPlatform CurrentPlatform()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                return "windows";
+                return UserPlatform.Windows;
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                return "linux";
+                return UserPlatform.Linux;
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                return "macintosh";
+                return UserPlatform.Macintosh;
             }
             else
             {
-                return "unknown";
+                return UserPlatform.Unknown;
             }
+        }
+
+        public override bool IsColorSupport()
+        {
+            if (this.RuntimeShell == ShellType.Console)
+            {
+                bool colorSupport = false;
+                if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+                {
+                    colorSupport = true; // Windows CMD supports color by default
+                }
+                else
+                {
+                    #pragma warning disable CS8600
+                    string term = Environment.GetEnvironmentVariable("TERM");
+                    if (!string.IsNullOrEmpty(term) && term.ToLower().Contains("color"))
+                    {
+                        colorSupport = true;
+                    }
+                }
+                return colorSupport;
+            }
+            return true;
+            
+        }
+
+        public override void SupportUtf8Console()
+        {
+            if(this.RuntimeShell == ShellType.Console)
+            {
+                Encoding utf8 = new UTF8Encoding();
+                Console.OutputEncoding = utf8;
+            }
+            return;
         }
 
         /// Xamarin.Forms only

@@ -12,7 +12,7 @@
             }
             catch (Exception ex)
             {
-                SystemConsole.Print(ex.ToString());
+                SystemConsole.Print(null,ex.ToString());
             }
             finally
             {

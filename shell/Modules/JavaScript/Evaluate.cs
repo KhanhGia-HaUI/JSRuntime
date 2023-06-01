@@ -12,20 +12,6 @@
             var SystemConsole = new Runtime.Modules.Standards.SystemImplement();
             var engine = new Jint.Engine();
 
-            var Scripts = new string[] {
-                path.Resolve($"{Script_Directory}/modules/constraints/compression.js"),
-                path.Resolve($"{Script_Directory}/modules/constraints/crypto.js"),
-                path.Resolve($"{Script_Directory}/modules/constraints/filesystem.js"),
-                path.Resolve($"{Script_Directory}/modules/system/default/timer.js"),
-                path.Resolve($"{Script_Directory}/modules/system/default/timer.js"),
-                path.Resolve($"{Script_Directory}/modules/system/implement/json.js"),
-                path.Resolve($"{Script_Directory}/modules/system/implement/filesystem.js"),
-                path.Resolve($"{Script_Directory}/modules/system/implement/javascript.js"),
-                path.Resolve($"{Script_Directory}/modules/third/maxrects-packer/maxrects-packer.js"),
-                path.Resolve($"{Script_Directory}/modules/third/cross-path-sort/index.js"),
-
-            };
-
             engine.SetValue("Fs", fs);
             engine.SetValue("args", args);
             engine.SetValue("MainScriptDirectory", (Script_Directory));
@@ -38,20 +24,6 @@
             engine.SetValue("DotNetCrypto", new Runtime.Modules.Standards.ImplementCrypto());
             engine.SetValue("DotNetCompress", new Runtime.Modules.Standards.Compress());
             engine.SetValue("JsonLibrary", new Runtime.Modules.Standards.JsonImplement());
-            engine.SetValue("ScriptModules", Scripts);
-
-            foreach (var Script in Scripts)
-            {
-                try
-                {
-                    var k_module = fs.ReadText(Script, Standards.IOModule.EncodingType.UTF8);
-                    engine.Execute(k_module);
-                }
-                catch (Exception ex)
-                {
-                    SystemConsole.Print($"Error executing script {Script}: {ex}");
-                }
-            }
 
             try
             {
@@ -59,7 +31,7 @@
             }
             catch (Exception ex)
             {
-                SystemConsole.Print($"Error executing main script: {ex}");
+                SystemConsole.Print(Standards.ConsoleColor.Red,$"Error executing main script: {ex}");
             }
             return;
         }

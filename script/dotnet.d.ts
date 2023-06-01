@@ -14,6 +14,23 @@ declare namespace Platform {
      * @returns The platform that the user is using right now
      */
     export function CurrentPlatform(): "windows" | "linux" | "macintosh" | "unknown" | "ios" | "android";
+
+    /**
+     * @returns The current Runtime is Console or GUI
+     */
+    export const RuntimeShell = "console" | "gui";
+
+    /**
+     * @returns Check if the UTF8 is supported by User Console
+     */
+
+    export function IsUTF8Support(): boolean;
+
+    /**
+     * @returns Check if the color is supported by User Console
+     */
+
+    export function IsColorSupport(): boolean;
 }
 
 /**
@@ -26,7 +43,10 @@ declare namespace Console {
      * @param params - Pass any things here and the tool will console out the input value.
      */
 
-    export function Print<T extends any>(...params: Array<T>): void;
+    export function Print<T extends any>(
+        color: Runtime.Script.Modules.Platform.Constraints.ConsoleColor | null,
+        ...params: Array<T>
+    ): void;
 
     /**
      * @returns Input argument as string
@@ -481,43 +501,6 @@ declare namespace DotNetBitmap {
     export async function SaveImageAsync(imagePath: string, imageByte: Image<Rgba32>): Promise<void>;
 }
 
-declare namespace JsonLibrary {
-    export function ParseJson<Generic_T extends object>(textJson: string): Generic_T;
-
-    export function StringifyJson<Generic_T extends object>(
-        jsonSerialized: Generic_T,
-        serializerOptions: JsonSerializerOptions | null,
-    ): string;
-}
-
-interface JsonSerializerOptions {
-    allowTrailingCommas?: boolean;
-    defaultBufferSize?: number;
-    dictionaryKeyPolicy?: PropertyNamingPolicy;
-    ignoreNullValues?: boolean;
-    ignoreReadOnlyProperties?: boolean;
-    maxDepth?: number;
-    propertyNamingPolicy?: PropertyNamingPolicy;
-    propertyNameCaseInsensitive?: boolean;
-    propertyNameTransform?: (name: string) => string;
-    readCommentHandling?: Runtime.Script.Modules.JsonLibrary.Constraints.CommentHandling;
-    writeIndented?: boolean;
-    encoder?: TextEncoder;
-    decoder?: TextDecoder;
-}
-
-interface PropertyNamingPolicy {
-    convertName(name: string): string;
-}
-
-interface TextDecoder {
-    decode(input?: ArrayBufferView | ArrayBuffer, options?: TextDecodeOptions): string;
-}
-
-interface TextEncoder {
-    encode(input?: string, options?: TextEncodeOptions): Uint8Array;
-}
-
 namespace DotNetCrypto {
     /**
      *
@@ -554,6 +537,16 @@ namespace DotNetCrypto {
      */
     export function ComputeSha512Hash(data: string): string;
 
+    /**
+     *
+     * @param plainText - Pass plain text
+     * @param password - Pass password
+     * @param saltValue - Pass salt value
+     * @param rijndaelMode - Rijndael Mode, choose one
+     * @param rijndaelPadding - Rijndael Padding, choose one
+     * @returns encrypted Uint8Array
+     */
+
     export function RijndaelEncrypt(
         plainText: string,
         password: string,
@@ -561,6 +554,16 @@ namespace DotNetCrypto {
         rijndaelMode: Runtime.Script.Modules.Crypto.Constraints.RijndaelMode,
         rijndaelPadding: Runtime.Script.Modules.Crypto.Constraints.RijndaelPadding,
     ): Uint8Array;
+
+    /**
+     *
+     * @param encryptedBytes - Encrypted Uint8Array
+     * @param password  - Pass password
+     * @param saltValue - Pass salt value
+     * @param rijndaelMode - Rijndael Mode, choose one
+     * @param rijndaelPadding - Rijndael Padding, choose one
+     * @returns decrypted Uint8Array
+     */
 
     export function RijndaelDecrypt(
         encryptedBytes: Uint8Array,
@@ -657,4 +660,17 @@ declare namespace JavaScriptEngine {
      * @returns Finished evaluate, can be undefined
      */
     export function Evaluate(js_string_to_evaluate: string): void;
+    /**
+     *
+     * @param js_string_to_execute - Pass JS to Evaluate as string
+     * @returns Add engine to the Runtime
+     */
+    export function Execute(js_string_to_execute: string): void;
+    /**
+     *
+     * @param specifier - Pass specifier
+     * @param code - Pass code
+     * @returns Added module JS import/export to the Runtime
+     */
+    export function AddModule(specifier: string, code: string): void;
 }
